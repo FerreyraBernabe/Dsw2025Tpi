@@ -2,7 +2,7 @@
 ## Desarrollo de Software
 ### Backend
 
-##Integrantes
+## Integrantes
 
 1.- Ferreyra, Bernabé - 53018 (Referente)
 2.- Maneff, Ana Victoria - 58006
