@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Juan Perez",
+    "email": "juan.perez@example.com",
+    "phonenumber": "+54 9 11 1234 5678"
+  },
+  {
+    "name": "Maria Lopez",
+    "email": "maria.lopez@example.com",
+    "phonenumber": "+54 9 261 555 1234"
+  },
+  {
+    "name": "Carlos Diaz",
+    "email": "carlos.diaz@example.com",
+    "phonenumber": "+54 9 341 666 7890"
+  }
+]

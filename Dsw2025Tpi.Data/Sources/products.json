@@ -1,0 +1,37 @@
+[
+  {
+    "sku": "7798186031828",
+    "name": "CARAMELO MASTICABLE DROPSY X700G",
+    "price": 6292.6,
+    "stock": 50,
+    "internalCode": "INT-001"
+  },
+  {
+    "sku": "7798290580052",
+    "name": "JUGO TUTTI NARANJA X200ML X1U",
+    "price": 194.4,
+    "stock": 70,
+    "internalCode": "INT-002"
+  },
+  {
+    "sku": "7798197300265",
+    "name": "TOSTADA DE ARROZ DULCE X150G",
+    "price": 921.2,
+    "stock": 60,
+    "internalCode": "INT-003"
+  },
+  {
+    "sku": "7798186032825",
+    "name": "CONFITE BILLIKEN X50G",
+    "price": 1380,
+    "stock": 80,
+    "internalCode": "INT-004"
+  },
+  {
+    "sku": "7798228640261",
+    "name": "BARRA DE ARROZ CROWIE X12G",
+    "price": 358.4,
+    "stock": 50,
+    "internalCode": "INT-005"
+  }
+]
