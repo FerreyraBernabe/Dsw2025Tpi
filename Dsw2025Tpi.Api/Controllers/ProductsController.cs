@@ -17,7 +17,7 @@ public class ProductsController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
+    [HttpGet()]
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var products = await _service.GetAllProducts();
@@ -25,8 +25,10 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    [HttpGet]
-    [Route("{id:guid}")]
+    /* [HttpGet]
+     [Route("{id:guid}")]*/
+
+    [HttpGet("{id:guid}", Name = "GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {
         var product = await _service.GetProductById(id);
@@ -37,7 +39,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [HttpPost]
+    [HttpPost()]
     public async Task<IActionResult> CreateProductAsync([FromBody] ProductModel.Request request)
     {
         if (request == null)
@@ -45,7 +47,8 @@ public class ProductsController : ControllerBase
             return BadRequest("Product data is required.");
         }
         var createdProduct = await _service.AddProduct(request);
-        return CreatedAtAction(nameof(GetProductByIdAsync), new { id = createdProduct.Id }, createdProduct);
+        //return CreatedAtAction(nameof(GetProductByIdAsync), new { id = createdProduct.Id }, createdProduct);
+        return CreatedAtRoute("GetProductById", new { id = createdProduct.Id }, createdProduct);
     }
 
     [HttpPut]
@@ -64,17 +67,17 @@ public class ProductsController : ControllerBase
         return Ok(updatedProduct);
     }
 
-  /*  [HttpDelete]
-    [Route("{id:guid}")]
-    public async Task<IActionResult> DeleteProductAsync(Guid id)
-    {
-        var deleted = await _service.DeactivateProduct(id);
-        if (!deleted)
-        {
-            return NotFound();
-        }
-        return NoContent();
-    }*/
+    /*  [HttpDelete]
+      [Route("{id:guid}")]
+      public async Task<IActionResult> DeleteProductAsync(Guid id)
+      {
+          var deleted = await _service.DeactivateProduct(id);
+          if (!deleted)
+          {
+              return NotFound();
+          }
+          return NoContent();
+      }*/
 
     [HttpPatch()]
     [Route("{id:guid}")]
