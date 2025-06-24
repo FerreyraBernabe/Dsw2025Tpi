@@ -9,35 +9,42 @@ namespace Dsw2025Tpi.Domain.Entities
     public class Product : EntityBase
     {
         public Product() { }
-        public Product(string sku, string name, decimal price, int stock, string internalCode, bool isActive)
+
+        public Product(string sku, string name, decimal price, int stock, string internalCode)
         {
+            Id = Guid.NewGuid();
             Sku = sku;
             Name = name;
             Price = price;
             Stock = stock;
-            internalCode = internalCode;
-            isActive = true;
+            InternalCode = internalCode;
+            IsActive = true;
         }
+
         public string Sku { get; set; }
         public string Name { get; set; }
+
+        private decimal _price;
         public decimal Price
-
         {
-        get => Price;
-        set
-         {
-            if (value <= 0)
-                throw new ArgumentException("El precio debe ser mayor a 0.");
-        }
+            get => _price;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("El precio debe ser mayor a 0.");
+                _price = value;
+            }
         }
 
+        private int _stock;
         public int Stock
         {
-            get => Stock;
+            get => _stock;
             set
             {
                 if (value < 0)
                     throw new ArgumentException("La cantidad de stock no puede ser negativa.");
+                _stock = value;
             }
         }
 
@@ -46,4 +53,5 @@ namespace Dsw2025Tpi.Domain.Entities
 
         public ICollection<OrderItem>? Items { get; set; }
     }
+
 }

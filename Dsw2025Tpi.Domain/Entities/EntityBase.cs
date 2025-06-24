@@ -2,9 +2,9 @@
 
 public abstract class EntityBase
 {
-    protected EntityBase()
+    public EntityBase()
     {
         Id = Guid.NewGuid();
     }
-    public Guid Id { get; }
+    public Guid Id { get; set; }
 }
