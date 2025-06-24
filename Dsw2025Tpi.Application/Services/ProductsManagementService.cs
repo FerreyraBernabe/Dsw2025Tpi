@@ -20,17 +20,18 @@ public class ProductsManagementService
     }
     public async Task<ProductModel.Response?> GetProductById(Guid id)
     {
-        var product= await _repository.GetById<Product>(id);
+        var product = await _repository.GetById<Product>(id);
         if (product == null)
             return null;
 
         return new ProductModel.Response(
             product.Id,
             product.Sku,
-            product.Name,
-            product.Price,
-            product.Stock,
             product.InternalCode,
+            product.Name,
+            product.Descripcion,
+            product.CurrentUnitPrice,
+            product.StockQuantity,
             product.IsActive
         );
     }
@@ -40,10 +41,11 @@ public class ProductsManagementService
         return products?.Select(p => new ProductModel.Response(
             p.Id,
             p.Sku,
-            p.Name,
-            p.Price,
-            p.Stock,
             p.InternalCode,
+            p.Name,
+            p.Descripcion,
+            p.CurrentUnitPrice,
+            p.StockQuantity,
             p.IsActive
         ));
     }
@@ -53,8 +55,9 @@ public class ProductsManagementService
         if (string.IsNullOrWhiteSpace(request.Sku) ||
             string.IsNullOrWhiteSpace(request.InternalCode) ||
             string.IsNullOrWhiteSpace(request.Name) ||
-            string.IsNullOrWhiteSpace(request.Price.ToString()) ||
-            string.IsNullOrWhiteSpace(request.Stock.ToString()))
+            string.IsNullOrWhiteSpace(request.Descripcion) ||
+            string.IsNullOrWhiteSpace(request.CurrentUnitPrice.ToString()) ||
+            string.IsNullOrWhiteSpace(request.StockQuantity.ToString()))
         {
             throw new ArgumentException("Invalid values for product");
         }
@@ -63,9 +66,9 @@ public class ProductsManagementService
         if (exist != null) throw new DuplicatedEntityException($"A product with that Sku already exists {request.Sku}");
         if (exist != null) throw new DuplicatedEntityException($"A product with that Internal Code already exists {request.InternalCode}");
 
-        var product = new Product(request.Sku,request.Name, request.Price, request.Stock, request.InternalCode);
+        var product = new Product(request.Sku, request.InternalCode, request.Name, request.Descripcion, request.CurrentUnitPrice, request.StockQuantity);
         await _repository.Add(product);
-        return new ProductModel.Response(product.Id, product.Sku, product.Name, product.Price, product.Stock, product.InternalCode, product.IsActive);
+        return new ProductModel.Response(product.Id, product.Sku, product.InternalCode, product.Name, product.Descripcion, product.CurrentUnitPrice, product.StockQuantity, product.IsActive);
     }
 
     public async Task<ProductModel.Response> UpdateProduct(Guid id, ProductModel.Request request)
@@ -78,16 +81,18 @@ public class ProductsManagementService
         product.Sku = request.Sku;
         product.InternalCode = request.InternalCode;
         product.Name = request.Name;
-        product.Price = request.Price;
-        product.Stock = request.Stock;
+        product.CurrentUnitPrice = request.CurrentUnitPrice;
+        product.StockQuantity = request.StockQuantity;
+
         var updated = await _repository.Update(product);
         return new ProductModel.Response(
             updated.Id,
             updated.Sku,
-            updated.Name,
-            updated.Price,
-            updated.Stock,
             updated.InternalCode,
+            updated.Name,
+            updated.Descripcion,
+            updated.CurrentUnitPrice,
+            updated.StockQuantity,
             updated.IsActive
         );
     }
@@ -104,63 +109,13 @@ public class ProductsManagementService
         return new ProductModel.Response(
             updated.Id,
             updated.Sku,
-            updated.Name,
-            updated.Price,
-            updated.Stock,
             updated.InternalCode,
+            updated.Name,
+            updated.Descripcion,
+            updated.CurrentUnitPrice,
+            updated.StockQuantity,
             updated.IsActive
         );
     }
 
-
-    /*  public async Task<Product> CreateProductAsync(ProductDto productDto)
-  {
-      var product = new Product
-      {
-          Sku = productDto.Sku,
-          Name = productDto.Name,
-          Price = productDto.Price,
-          Stock = productDto.Stock,
-          InternalCode = productDto.InternalCode,
-          IsActive = productDto.IsActive
-      };
-      await _productRepository.Add(product);
-      return new Product
-      {
-          Id = product.Id,
-          Sku = product.Sku,
-          Name = product.Name,
-          Price = product.Price,
-          Stock = product.Stock,
-          IsActive = product.IsActive
-      };
-  }
-
-  public async Task<Product?> UpdateProductAsync(Product productDto)
-  {
-      var product = await _productRepository.GetByIdAsync(productDto.Id);
-      if (product == null) return null;
-
-      product.Sku = productDto.Sku;
-      product.Name = productDto.Name;
-      product.Price = productDto.Price;
-      product.Stock = productDto.Stock;
-      product.InternalCode = productDto.InternalCode;
-      product.IsActive = productDto.IsActive;
-
-      await _productRepository.UpdateAsync(product);
-
-      return product;
-  }
-
-  public async Task<bool> DeleteProductAsync(Guid id)
-  {
-      var product = await _productRepository.GetById<Product>(id);
-      if (product == null) return false;
-
-      await _productRepository.Delete(product);
-      return true;
-  }*/
-
 }
-
