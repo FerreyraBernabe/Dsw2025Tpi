@@ -25,10 +25,7 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    /* [HttpGet]
-     [Route("{id:guid}")]*/
-
-    [HttpGet("{id:guid}", Name = "GetProductById")]
+     [HttpGet("{id:guid}", Name = "GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {
         var product = await _service.GetProductById(id);
@@ -38,6 +35,9 @@ public class ProductsController : ControllerBase
         }
         return Ok(product);
     }
+
+    /* [HttpGet]
+     [Route("{id:guid}")]*/
 
     [HttpPost()]
     public async Task<IActionResult> CreateProductAsync([FromBody] ProductModel.Request request)
