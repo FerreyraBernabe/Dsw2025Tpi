@@ -2,6 +2,7 @@
 using Dsw2025Tpi.Application.Exceptions;
 using Dsw2025Tpi.Application.Services;
 using Dsw2025Tpi.Application.Validations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationException;
@@ -10,6 +11,7 @@ namespace Dsw2025Tpi.Api.Controllers
 {
         [ApiController]
         [Route("api/auth")]
+        [Authorize]
         public class AuthenticateController : ControllerBase
         {
             private readonly UserManager<IdentityUser> _userManager;
@@ -26,6 +28,7 @@ namespace Dsw2025Tpi.Api.Controllers
             }
 
             [HttpPost("login")]
+            [AllowAnonymous]
             public async Task<IActionResult> Login([FromBody] LoginModel request)
             {
                 var user = await _userManager.FindByNameAsync(request.Username);
@@ -40,19 +43,25 @@ namespace Dsw2025Tpi.Api.Controllers
                     throw new UnauthorizedException("Usuario o contraseña incorrectos");
                 }
 
-                var token = _jwtTokenService.GenerateToken(request.Username);
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? throw new ApplicationException("User has not assigned role");
+
+
+            var token = _jwtTokenService.GenerateToken(request.Username,role);
                 return Ok(new { token });
             }
 
             [HttpPost("register")]
+            [AllowAnonymous]
             public async Task<IActionResult> Register([FromBody] RegisterModel model)
             {
                 RegisterValidator.Validate(model);
 
                 var user = new IdentityUser { UserName = model.Username, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                var role = await _userManager.AddToRoleAsync(user, "Admin");
 
-                if (!result.Succeeded)
+                 if (!result.Succeeded)
                     return BadRequest(result.Errors);
 
                 // Opcional: enviar email de confirmación, etc.

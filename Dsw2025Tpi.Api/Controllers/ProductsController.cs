@@ -23,6 +23,7 @@ public class ProductsController : ControllerBase
 
     // punto 1
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProductAsync([FromBody] ProductModel.Request request)
     {
         if (request == null)
@@ -63,6 +64,7 @@ public class ProductsController : ControllerBase
     // punto 4
     [HttpPut()]
     [Route("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProductAsync(Guid id, [FromBody] ProductModel.Request request)
     {
         if (request == null)
@@ -81,6 +83,7 @@ public class ProductsController : ControllerBase
     // punto 5
     [HttpPatch()]
     [Route("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PatchProduct(Guid id)
     {
         

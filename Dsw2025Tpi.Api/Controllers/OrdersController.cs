@@ -22,7 +22,8 @@ namespace Dsw2025Tpi.Api.Controllers
 
 
         //punto 6
-        [HttpPost]
+        [HttpPost()]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOrderAsync([FromBody] OrderModel.OrderRequest request)
         {
             if (request == null || request.OrderItems == null || request.OrderItems.Count == 0)
@@ -59,6 +60,7 @@ namespace Dsw2025Tpi.Api.Controllers
 
         //punto 9 
         [HttpPut("{id:guid}/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] string status)
         {
             if (string.IsNullOrWhiteSpace(status))
