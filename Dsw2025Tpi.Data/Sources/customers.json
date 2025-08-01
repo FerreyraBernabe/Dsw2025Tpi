@@ -1,0 +1,20 @@
+[
+  {
+    "id": "8ee65b9a-6746-4401-a885-09a9f7c67ed4",
+    "name": "Jose Sainz",
+    "email": "jose.sainz@example.com",
+    "phonenumber": "+54 9 11 1234 5678"
+  },
+  {
+    "id": "285c69a9-df12-4f83-a3e4-999765b7e938",
+    "name": "Maria Lopez",
+    "email": "maria.lopez@example.com",
+    "phonenumber": "+54 9 261 555 1234"
+  },
+  {
+    "id": "234c69a9-df12-4f83-a3e5-999765b7e878",
+    "name": "Carlos Diaz",
+    "email": "carlos.diaz@example.com",
+    "phonenumber": "+54 9 341 666 7890"
+  }
+]

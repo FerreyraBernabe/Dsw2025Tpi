@@ -8,21 +8,36 @@ namespace Dsw2025Tpi.Domain.Entities
 {
     public class Order : EntityBase
     {
-        public Order(DateTime date, string shippingAddress, string billingAddress, string? notes, decimal totalAmount)
+        public Order()
         {
+            OrderItems = new List<OrderItem>();
+            Date = DateTime.UtcNow;
+            Status = OrderStatus.PENDING;
+        }
+
+        public Order(
+           DateTime date,
+           string shippingAddress,
+           string billingAddress,
+           string? notes,
+           decimal totalAmount, 
+           Guid? customerId)
+        {
+            Id = Guid.NewGuid();
             Date = date;
             ShippingAddress = shippingAddress;
             BillingAddress = billingAddress;
             Notes = notes;
             TotalAmount = totalAmount;
             Status = OrderStatus.PENDING;
-
+            CustomerId = customerId;
+            OrderItems = new List<OrderItem>();
         }
 
-        public required OrderStatus Status { get; set; }
-        public required DateTime Date { get; set; } //pendiente la validacion de fecha
-        public required string ShippingAddress { get; set; }
-        public required string BillingAddress { get; set; }
+        public OrderStatus Status { get; set; }
+        public DateTime Date { get; set; } 
+        public string ShippingAddress { get; set; }
+        public string BillingAddress { get; set; }
         public string? Notes { get; set; }
         public decimal TotalAmount { get; set; }
         public Guid? CustomerId { get; set; }

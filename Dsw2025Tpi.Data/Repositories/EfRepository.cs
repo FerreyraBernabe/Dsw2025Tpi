@@ -1,5 +1,6 @@
 ﻿using Dsw2025Tpi.Domain.Entities;
 using Dsw2025Tpi.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Dsw2025Tpi.Data.Repositories;
@@ -16,14 +17,29 @@ public class EfRepository: IRepository
     public async Task<T> Add<T>(T entity) where T : EntityBase
     {
         await _context.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+        }
         return entity;
     }
 
     public async Task<T> Delete<T>(T entity) where T : EntityBase
     {
         _context.Remove(entity);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+        }
+
         return entity;
     }
 
@@ -50,7 +66,15 @@ public class EfRepository: IRepository
     public async Task<T> Update<T>(T entity) where T : EntityBase
     {
         _context.Update(entity);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+        }
+
         return entity;
     }
 
