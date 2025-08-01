@@ -47,8 +47,7 @@ public class ProductsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {
-        var product = await _service.GetProductById(id);
-        
+        var product = await _service.GetProductById(id);        
         return Ok(product);
     }
 
@@ -59,8 +58,7 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProductAsync(Guid id, [FromBody] ProductModel.Request request)
     {
-        var updatedProduct = await _service.UpdateProduct(id, request);
-        
+        var updatedProduct = await _service.UpdateProduct(id, request);        
         return Ok(updatedProduct);
     }
 
@@ -71,8 +69,7 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PatchProduct(Guid id)
     {        
-            var product = await _service.DeactivateProduct(id);
-           
-            return NoContent();
+         var product = await _service.DeactivateProduct(id);           
+         return NoContent();
     }
 }
