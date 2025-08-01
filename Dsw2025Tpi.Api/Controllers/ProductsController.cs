@@ -1,4 +1,5 @@
 ﻿using Dsw2025Tpi.Application.Dtos;
+using Dsw2025Tpi.Application.Exceptions;
 using Dsw2025Tpi.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ public class ProductsController : ControllerBase
     {
         if (request == null)
         {
-            return BadRequest("Los datos proporcionados no son válidos");
+            throw new BadRequestException("Los datos proporcionados no son válidos");
         }
         var createdProduct = await _service.AddProduct(request);
        
@@ -40,7 +41,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var products = await _service.GetAllProducts();
-        if (products == null || !products.Any()) return NoContent();
+        if (products == null || !products.Any()) throw new NoContentException("Producto no puede ser nulo");
         return Ok(products);
     }
 
@@ -53,7 +54,7 @@ public class ProductsController : ControllerBase
         var product = await _service.GetProductById(id);
         if (product == null)
         {
-            return NotFound("No se encontraron productos");
+            throw new EntityNotFoundException("No se encontraron productos");
         }
         return Ok(product);
     }
@@ -66,12 +67,12 @@ public class ProductsController : ControllerBase
     {
         if (request == null)
         {
-            return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
+            throw new BadRequestException("El cuerpo de la solicitud no puede ser nulo.");
         }
         var updatedProduct = await _service.UpdateProduct(id, request);
         if (updatedProduct == null)
         {
-            return NotFound("Producto no encontrado.");
+            throw new EntityNotFoundException("Producto no encontrado.");
         }
         return Ok(updatedProduct);
     }
@@ -82,26 +83,13 @@ public class ProductsController : ControllerBase
     [Route("{id:guid}")]
     public async Task<IActionResult> PatchProduct(Guid id)
     {
-        try
-        {
+        
             var product = await _service.DeactivateProduct(id);
             if (product == null)
             {
-                return NotFound("Producto no encontrado");
+                throw new EntityNotFoundException("Producto no encontrado");
             }
-            return NoContent();
-        }
-        catch (ArgumentException ae)
-        {
-            return BadRequest(ae.Message);
-        }
-        catch (ApplicationException de)
-        {
-            return Conflict(de.Message);
-        }
-        catch (Exception)
-        {
-            return Problem("Se produjo un error al actualizar el producto");
-        }
+            throw new NoContentException("No hay productos");
+       
     }
 }

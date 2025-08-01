@@ -1,8 +1,10 @@
 ﻿using Dsw2025Tpi.Application.Dtos;
+using Dsw2025Tpi.Application.Exceptions;
 using Dsw2025Tpi.Application.Services;
 using Dsw2025Tpi.Application.Validations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationException;
 
 namespace Dsw2025Tpi.Api.Controllers
 {
@@ -29,13 +31,13 @@ namespace Dsw2025Tpi.Api.Controllers
                 var user = await _userManager.FindByNameAsync(request.Username);
                 if (user == null)
                 {
-                    return Unauthorized("Usuario o contraseña incorrectos");
+                    throw new UnauthorizedException("Usuario o contraseña incorrectos");
                 }
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
                 if (!result.Succeeded)
                 {
-                    return Unauthorized("Usuario o contraseña incorrectos");
+                    throw new UnauthorizedException("Usuario o contraseña incorrectos");
                 }
 
                 var token = _jwtTokenService.GenerateToken(request.Username);

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class EntityNotFoundException(string message) : ApplicationException(message)
+    public class EntityNotFoundException : ApplicationException
     {
+        public EntityNotFoundException(string message) : base(message)
+        {
+        }
     }
 }

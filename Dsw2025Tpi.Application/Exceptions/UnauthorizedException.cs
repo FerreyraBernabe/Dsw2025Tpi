@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class InvalidStatusException(string message) : ApplicationException(message)
+    public class UnauthorizedException : Exception
     {
+        public UnauthorizedException(string message) : base(message)
+        {
+
+        }
     }
 }
 
