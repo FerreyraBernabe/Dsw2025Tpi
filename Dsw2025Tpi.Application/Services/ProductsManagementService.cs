@@ -38,6 +38,7 @@ public class ProductsManagementService : IProductsManagementService
             product.IsActive
         );
     }
+
     public async Task<IEnumerable<ProductModel.Response>?> GetAllProducts()
     {
         var products = await _repository.GetFiltered<Product>(p => p.IsActive);

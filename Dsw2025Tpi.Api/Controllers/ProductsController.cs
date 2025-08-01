@@ -37,7 +37,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var products = await _service.GetAllProducts();
-        if (products == null || !products.Any()) throw new NoContentException("Product can not be null.");
+        if (products == null || !products.Any()) throw new NoContentException("No products registered.");
         return Ok(products);
     }
 
@@ -73,6 +73,6 @@ public class ProductsController : ControllerBase
     {        
             var product = await _service.DeactivateProduct(id);
            
-            throw new NoContentException("Product succesfully disabled.");
+            return NoContent();
     }
 }

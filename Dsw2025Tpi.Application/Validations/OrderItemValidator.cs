@@ -14,8 +14,8 @@ namespace Dsw2025Tpi.Application.Validation
             if (item == null)
                 throw new InvalidOperationException("The Order Item can not be null.");
 
-            if (item.ProductId == Guid.Empty)
-                throw new InvalidOperationException("Product is mandatory.");
+           if (item.ProductId == Guid.Empty || item.ProductId == null)
+                throw new InvalidOperationException($"Product is mandatory. Valor recibido: '{item.ProductId}'");
 
             if (item.Quantity <= 0)
                 throw new InvalidOperationException("The quantity must be above zero.");
