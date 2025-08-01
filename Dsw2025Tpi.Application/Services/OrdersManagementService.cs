@@ -39,10 +39,10 @@ namespace Dsw2025Tpi.Application.Services
             {
                 
                 var product = await _repository.GetById<Product>(item.ProductId)
-                    ?? throw new EntityNotFoundException($"Producto no encontrado: {item.ProductId}");
+                    ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}");
 
                 if (product.StockQuantity < item.Quantity)
-                    throw new InvalidOperationException($"Stock insuficiente para el producto: {product.Name}");
+                    throw new InvalidOperationException($"Insufficient stock for the product: {product.Name}");
 
                 product.StockQuantity -= item.Quantity;
                 await _repository.Update(product);
@@ -176,13 +176,15 @@ namespace Dsw2025Tpi.Application.Services
 
         public async Task<OrderModel.Response> UpdateOrderStatus(Guid id, string status)
         {
-            
             var order = await _repository.GetById<Order>(id, nameof(Order.OrderItems), "OrderItems.Product")
-             ?? throw new EntityNotFoundException("Orden no encontrada");
+             ?? throw new EntityNotFoundException("Order not found.");
 
             // Validar y actualizar el estado
+            if (string.IsNullOrWhiteSpace(status))
+                throw new BadRequestException("You must specify a valid status.");
+
             if (!Enum.TryParse<OrderStatus>(status, true, out var newStatus))
-                throw new InvalidOperationException("Estado inválido.");
+                throw new InvalidOperationException("Invalid Status.");
 
             order.Status = newStatus;
             var updated = await _repository.Update(order);

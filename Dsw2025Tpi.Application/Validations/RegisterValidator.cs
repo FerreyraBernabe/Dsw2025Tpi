@@ -12,13 +12,13 @@ namespace Dsw2025Tpi.Application.Validations
        public static void Validate(RegisterModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Username))
-                throw new InvalidOperationException("El nombre de usuario es obligatorio.");
+                throw new InvalidOperationException("Username is mandatory.");
 
             if (string.IsNullOrWhiteSpace(model.Email))
-                throw new InvalidOperationException("El email es obligatorio.");
+                throw new InvalidOperationException("Email is mandatory.");
 
             if (!IsValidEmail(model.Email))
-                throw new InvalidOperationException("El formato del email no es válido.");
+                throw new InvalidOperationException("Email format is not valid.");
 
         }
 

@@ -26,10 +26,8 @@ namespace Dsw2025Tpi.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOrderAsync([FromBody] OrderModel.OrderRequest request)
         {
-            if (request == null || request.OrderItems == null || request.OrderItems.Count == 0)
-                throw new BadRequestException("Datos de la orden inválidos o incompletos.");
-                var order = await _service.CreateOrderAsync(request);
-                return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+            var order = await _service.CreateOrderAsync(request);
+            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
            
         }
 
@@ -51,9 +49,8 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> GetOrderById(Guid id)
         {
             var orden = await _service.GetOrderById(id);
-            if (orden == null)
-            {
-                throw new EntityNotFoundException("Orden no encontrada");
+            if (orden == null) {
+                throw new EntityNotFoundException("Order not found.");
             }
             return Ok(orden);
         }
@@ -63,14 +60,11 @@ namespace Dsw2025Tpi.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] string status)
         {
-            if (string.IsNullOrWhiteSpace(status))
-                throw new BadRequestException("Debe especificar un estado válido.");
-
-                var updatedOrder = await _service.UpdateOrderStatus(id, status);
-                if (updatedOrder == null)
-                    throw new EntityNotFoundException("Orden no encontrada.");
-                return Ok(updatedOrder);
-            
+            var updatedOrder = await _service.UpdateOrderStatus(id, status);
+            if (updatedOrder == null) {
+                throw new EntityNotFoundException("Order not found.");
+            }  
+            return Ok(updatedOrder);
         }
     }
 }

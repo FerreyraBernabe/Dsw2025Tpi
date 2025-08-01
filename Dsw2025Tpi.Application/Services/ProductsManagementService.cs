@@ -24,7 +24,7 @@ public class ProductsManagementService : IProductsManagementService
     {
        
         var product = await _repository.GetById<Product>(id)
-                      ?? throw new EntityNotFoundException("Producto no encontrado");
+                      ?? throw new EntityNotFoundException("Product not found.");
 
 
         return new ProductModel.Response(
@@ -62,11 +62,11 @@ public class ProductsManagementService : IProductsManagementService
 
         if (existSku != null)
         {
-            throw new DuplicatedEntityException($"Un producto con el mismo Sku ya existe {request.Sku}");
+            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
         }
         if (existInternalCode != null)
         {
-            throw new DuplicatedEntityException($"Un producto con el mismo InternalCode ya existe {request.InternalCode}");
+            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
         }
 
         var description = request.Description ?? string.Empty;
@@ -76,50 +76,11 @@ public class ProductsManagementService : IProductsManagementService
         return new ProductModel.Response(product.Id, product.Sku, product.InternalCode, product.Name, product.Description, product.CurrentUnitPrice, product.StockQuantity, product.IsActive);
     }
 
-    /*public async Task<ProductModel.Response> AddProduct(ProductModel.Request request)
+   public async Task<ProductModel.Response> UpdateProduct(Guid id, ProductModel.Request request)
     {
         ProductValidator.Validate(request);
 
-        var exist = await _repository.First<Product>(p => p.Sku == request.Sku);
-        if (exist != null) throw new DuplicatedEntityException($"A product with that Sku already exists {request.Sku}");
-        if (exist != null) throw new DuplicatedEntityException($"A product with that Internal Code already exists {request.InternalCode}");
-
-        var product = new Product(request.Sku, request.InternalCode, request.Name, request.Description, request.CurrentUnitPrice, request.StockQuantity);
-        await _repository.Add(product);
-        return new ProductModel.Response(product.Id, product.Sku, product.InternalCode,product.Name, product.Description, product.CurrentUnitPrice, product.StockQuantity, product.IsActive);
-    }
-    
-    public async Task<ProductModel.Response> UpdateProduct(Guid id, ProductModel.Request request)
-    {
-        var product = await _repository.GetById<Product>(id);
-        if (product == null)
-            throw new System.ApplicationException("Producto no encontrado.");
-        if (string.IsNullOrWhiteSpace(request.Sku) || string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentException("SKU y nombre son obligatorios.");
-        product.Sku = request.Sku;
-        product.InternalCode = request.InternalCode;
-        product.Name = request.Name;
-        product.CurrentUnitPrice = request.CurrentUnitPrice;
-        product.StockQuantity = request.StockQuantity;
-
-        var updated = await _repository.Update(product);
-        return new ProductModel.Response(
-            updated.Id,
-            updated.Sku,
-            updated.InternalCode,
-            updated.Name,
-            updated.Description,
-            updated.CurrentUnitPrice,
-            updated.StockQuantity,
-            updated.IsActive
-        );
-    }*/
-
-    public async Task<ProductModel.Response> UpdateProduct(Guid id, ProductModel.Request request)
-    {
-        ProductValidator.Validate(request);
-
-        var product = await _repository.GetById<Product>(id) ?? throw new EntityNotFoundException("Producto no encontrado.");
+        var product = await _repository.GetById<Product>(id) ?? throw new EntityNotFoundException("Product not found.");
 
         product.Sku = request.Sku;
         product.InternalCode = request.InternalCode;
@@ -145,7 +106,7 @@ public class ProductsManagementService : IProductsManagementService
     {
 
         var product = await _repository.GetById<Product>(id)
-                      ?? throw new EntityNotFoundException("Producto no encontrado");
+                      ?? throw new EntityNotFoundException("Product not found.");
 
         product.IsActive = false;
        var updated = await _repository.Update(product);

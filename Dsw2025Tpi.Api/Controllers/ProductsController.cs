@@ -26,12 +26,7 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProductAsync([FromBody] ProductModel.Request request)
     {
-        if (request == null)
-        {
-            throw new BadRequestException("Los datos proporcionados no son válidos");
-        }
         var createdProduct = await _service.AddProduct(request);
-       
         return CreatedAtRoute("GetProductById", new { id = createdProduct.Id }, createdProduct);
     }
 
@@ -42,7 +37,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var products = await _service.GetAllProducts();
-        if (products == null || !products.Any()) throw new NoContentException("Producto no puede ser nulo");
+        if (products == null || !products.Any()) throw new NoContentException("Product can not be null.");
         return Ok(products);
     }
 
@@ -53,10 +48,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {
         var product = await _service.GetProductById(id);
-        if (product == null)
-        {
-            throw new EntityNotFoundException("No se encontraron productos");
-        }
+        
         return Ok(product);
     }
 
@@ -67,15 +59,8 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProductAsync(Guid id, [FromBody] ProductModel.Request request)
     {
-        if (request == null)
-        {
-            throw new BadRequestException("El cuerpo de la solicitud no puede ser nulo.");
-        }
         var updatedProduct = await _service.UpdateProduct(id, request);
-        if (updatedProduct == null)
-        {
-            throw new EntityNotFoundException("Producto no encontrado.");
-        }
+        
         return Ok(updatedProduct);
     }
 
@@ -85,14 +70,9 @@ public class ProductsController : ControllerBase
     [Route("{id:guid}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PatchProduct(Guid id)
-    {
-        
+    {        
             var product = await _service.DeactivateProduct(id);
-            if (product == null)
-            {
-                throw new EntityNotFoundException("Producto no encontrado");
-            }
-            throw new NoContentException("No hay productos");
-       
+           
+            throw new NoContentException("Product succesfully disabled.");
     }
 }

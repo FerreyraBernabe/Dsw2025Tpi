@@ -19,7 +19,6 @@ namespace Dsw2025Tpi.Api.Configurations
                 options.UseSqlServer(configuration.GetConnectionString("Dsw2025Tpi"));
             });
 
-
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<ProductsManagementService>();
             services.AddScoped<OrdersManagementService>();

@@ -99,11 +99,6 @@ public class InMemory : IRepository
         
        // return await Task.FromResult(GetList<T>()?.FirstOrDefault(e => e.Id == id));
 
-        
-
-         
-    
-
     public async Task<IEnumerable<T>?> GetAll<T>(params string[] include) where T : EntityBase
     {
         return await Task.FromResult(GetList<T>());
