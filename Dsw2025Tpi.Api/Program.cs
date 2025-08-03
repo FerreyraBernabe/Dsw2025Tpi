@@ -144,10 +144,12 @@ public class Program
             });
 
         builder.Services.AddDomainServices(builder.Configuration);
-         
-        builder.Services.AddScoped<AuthenticateService>();
 
-         builder.Services.AddDbContext<AuthenticateContext>(options =>
+        //  builder.Services.AddScoped<AuthenticateService>();
+
+        builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
+
+        builder.Services.AddDbContext<AuthenticateContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("Dsw2025Tpi"));
         });

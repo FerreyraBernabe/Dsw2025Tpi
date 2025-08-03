@@ -24,7 +24,7 @@ namespace Dsw2025Tpi.Api.Configurations
             services.AddScoped<OrdersManagementService>();
             services.AddScoped<IProductsManagementService, ProductsManagementService>();
             services.AddScoped<IOrdersManagementService, OrdersManagementService>();
-            services.AddScoped<IAuthenticateService, AuthenticateService>();
+         //   services.AddScoped<IAuthenticateService, AuthenticateService>();
 
             return services;
         }
