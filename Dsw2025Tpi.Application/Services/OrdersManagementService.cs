@@ -4,6 +4,7 @@ using Dsw2025Tpi.Application.Interfaces;
 using Dsw2025Tpi.Application.Validation;
 using Dsw2025Tpi.Domain.Entities;
 using Dsw2025Tpi.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,9 @@ namespace Dsw2025Tpi.Application.Services
         public async Task<OrderModel.Response> CreateOrderAsync(OrderModel.OrderRequest request)
         {
             OrderValidator.Validate(request);
+
+            var customer = await _repository.GetById<Customer>(request.CustomerId)
+                    ?? throw new EntityNotFoundException($"Customer not found: {request.CustomerId}");
 
             var orderItems = new List<OrderItem>();
             decimal totalAmount = 0;
