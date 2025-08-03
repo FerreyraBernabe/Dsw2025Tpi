@@ -8,6 +8,7 @@ using Dsw2025Tpi.Data.Repositories;
 using Dsw2025Tpi.Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -25,8 +26,55 @@ public class Program
         builder.Services.AddTransient<ExceptionMiddleware>();
 
         // Add services to the container.
+        
+        builder.Services.AddControllers()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = new Dictionary<string, string[]>();
 
-        builder.Services.AddControllers();
+                    foreach (var modelStateEntry in context.ModelState)
+                    {
+                        var fieldName = modelStateEntry.Key;
+                        var fieldErrors = modelStateEntry.Value.Errors;
+
+                        if (fieldErrors.Any())
+                        {
+                            var errorMessages = fieldErrors
+                                .Select(error =>
+                                {
+                                    // Detecta si el error es de conversión de tipo (por ejemplo, Guid)
+                                    if (error.ErrorMessage.Contains("could not be converted to"))
+                                    {
+                                        return $"{fieldName} has an invalid format. Check request model.";
+                                    }
+                                    // O si el error es de JSON (por ejemplo, un valor nulo para un tipo no nulo)
+                                    else if (error.ErrorMessage.Contains("The JSON value could not be converted to"))
+                                    {
+                                        return $"{fieldName} has an invalid format. Check request model.";
+                                    }
+                                    // Si no es un error de conversión, usa el mensaje original
+                                    return error.ErrorMessage;
+                                })
+                                .ToArray();
+
+                            errors.Add(fieldName, errorMessages);
+                        }
+                    }
+
+                    var errorResponse = new
+                    {
+                        Status = 400,
+                        Title = "Validation Failed",
+                        Detail = "One or more validation errors occurred.",
+                        Errors = errors
+                    };
+
+                    return new BadRequestObjectResult(errorResponse);
+                };
+            });
+        
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
@@ -121,7 +169,7 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<Dsw2025TpiContext>();
-            dbContext.Database.Migrate(); // Aplica migraciones pendientes  
+           // dbContext.Database.Migrate(); // Aplica migraciones pendientes  
             dbContext.SeedDatabase();     // Carga los datos desde los JSON  
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
