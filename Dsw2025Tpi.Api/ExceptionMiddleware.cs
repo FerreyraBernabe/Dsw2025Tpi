@@ -3,71 +3,73 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationException;
+using ValidationException= Dsw2025Tpi.Application.Exceptions.ValidationException;
 
-// ExceptionMiddleware.cs
-//public class ExceptionMiddleware : IMiddleware
-//{
-//    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-//    {
-//        try
-//        {
-//            await next(context);
-//        }
-//        catch (Exception e)
-//        {
-//            context.Response.ContentType = "application/json";
 
-//                object errorResponse;
+public class ExceptionMiddleware : IMiddleware
+{
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        try
+        {
+            await next(context);
+        }
+        catch (Exception e)
+        {
+            context.Response.ContentType = "application/json";
 
-//            if (e is System.Text.Json.JsonException)
-//            {
-//                errorResponse = new
-//                {
-//                    Status = (int)HttpStatusCode.BadRequest,
-//                    Title = "Invalid Request Body",
-//                    Detail = "The request body could not be parsed as valid JSON."
-//                };
-//            }
-//            else if (e is ValidationException ve)
-//            {
-//                var errors = new Dictionary<string, string[]>();
-//                // Populate errors dictionary based on ValidationException details
-//                errorResponse = new
-//                {
-//                    Status = (int)HttpStatusCode.BadRequest,
-//                    Title = "Validation Failed",
-//                    Detail = "One or more validation errors occurred.",
-//                    Errors = errors
-//                };
-//            }
-//            else
-//            {
-//                context.Response.StatusCode = (int)(e switch
-//                {
-//                    EntityNotFoundException => HttpStatusCode.NotFound,
-//                    NoContentException => HttpStatusCode.NoContent,
-//                    DuplicatedEntityException => HttpStatusCode.BadRequest,
-//                    BadRequestException => HttpStatusCode.BadRequest,
-//                    ApplicationException => HttpStatusCode.BadRequest,
-//                    ArgumentException => HttpStatusCode.BadRequest,
-//                    InvalidOperationException => HttpStatusCode.BadRequest,
-//                    UnauthorizedException => HttpStatusCode.Unauthorized,
-//                    _ => HttpStatusCode.InternalServerError
-//                });
+            var statusCode = HttpStatusCode.InternalServerError;
+            object errors = null;
+            string title = "Internal Server Error";
+            string detail = e.Message;
 
-//                errorResponse = new
-//                {
-//                    Status = context.Response.StatusCode,
-//                    Title = context.Response.StatusCode.ToString(),
-//                    Detail = e.Message
-//                };
-//            }
+            switch (e)
+            {
+                case ValidationException ve:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    detail = ve.Message;
+                    errors = ve.Errors; // Extrae la lista de errores
+                    break;
 
-//            var json = JsonSerializer.Serialize(errorResponse);
-//            await context.Response.WriteAsync(json);
-//        }
-//    }
-//}
+                case EntityNotFoundException:
+                    statusCode = HttpStatusCode.NotFound;
+                    title = "Not Found";
+                    break;
+                case NoContentException:
+                    statusCode = HttpStatusCode.NoContent;
+                    title = "No Content";
+                    break;
+                case DuplicatedEntityException:
+                case BadRequestException:
+                case ApplicationException:
+                case ArgumentException:
+                case InvalidOperationException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    break;
+                case UnauthorizedException:
+                    statusCode = HttpStatusCode.Unauthorized;
+                    title = "Unauthorized";
+                    break;
+            }
+
+            var errorResponse = new
+            {
+                status = (int)statusCode,
+                title = title,
+                detail = detail,
+                errors = errors
+            };
+
+            context.Response.StatusCode = (int)statusCode;
+
+            var json = JsonSerializer.Serialize(errorResponse);
+            await context.Response.WriteAsync(json);
+        }
+    }
+}
+
 //public class ExceptionMiddleware : IMiddleware
 //{
 //    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -90,8 +92,9 @@ using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationExcept
 //                ArgumentException => HttpStatusCode.BadRequest,
 //                InvalidOperationException => HttpStatusCode.BadRequest,
 //                UnauthorizedException => HttpStatusCode.Unauthorized,
-//                JsonException => HttpStatusCode.BadRequest,
+//                ValidationException => HttpStatusCode.BadRequest,
 //                _ => HttpStatusCode.InternalServerError
+
 //            };
 
 //            context.Response.StatusCode = (int)statusCode;
@@ -100,10 +103,7 @@ using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationExcept
 //            {
 //                status = (int)statusCode,
 //                title = statusCode.ToString(),
-//                // Usa un mensaje más amigable para el error de JSON
-//                detail = e is JsonException
-//                         ? "Invalid request body format."
-//                         : e.Message
+//                detail = e.Message
 //            };
 
 //            var json = JsonSerializer.Serialize(errorResponse);
@@ -111,44 +111,3 @@ using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationExcept
 //        }
 //    }
 //}
-
-public class ExceptionMiddleware : IMiddleware
-{
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        try
-        {
-            await next(context);
-        }
-        catch (Exception e)
-        {
-            context.Response.ContentType = "application/json";
-
-            var statusCode = e switch
-            {
-                EntityNotFoundException => HttpStatusCode.NotFound,
-                NoContentException => HttpStatusCode.NoContent,
-                DuplicatedEntityException => HttpStatusCode.BadRequest,
-                BadRequestException => HttpStatusCode.BadRequest,
-                ApplicationException => HttpStatusCode.BadRequest,
-                ArgumentException => HttpStatusCode.BadRequest,
-                InvalidOperationException => HttpStatusCode.BadRequest,
-                UnauthorizedException => HttpStatusCode.Unauthorized,
-                _ => HttpStatusCode.InternalServerError
-
-            };
-
-            context.Response.StatusCode = (int)statusCode;
-
-            var errorResponse = new
-            {
-                status = (int)statusCode,
-                title = statusCode.ToString(),
-                detail = e.Message
-            };
-
-            var json = JsonSerializer.Serialize(errorResponse);
-            await context.Response.WriteAsync(json);
-        }
-    }
-}

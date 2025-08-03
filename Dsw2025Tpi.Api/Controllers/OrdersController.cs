@@ -2,6 +2,7 @@
 using Dsw2025Tpi.Application.Exceptions;
 using Dsw2025Tpi.Application.Interfaces;
 using Dsw2025Tpi.Application.Services;
+using Dsw2025Tpi.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationException = Dsw2025Tpi.Application.Exceptions.ApplicationException;
@@ -38,6 +39,11 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> GetAllOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? status = null, [FromQuery] Guid? customerId = null)
         {
             var result = await _service.GetAllOrders(page, pageSize, status, customerId);
+            if (result == null || !result.Purchases.Any()) {
+                Response.Headers.Append("X-Message", "There are no active orders");
+                return NoContent();
+            }
+
             return Ok(result);
             
         }
@@ -50,7 +56,7 @@ namespace Dsw2025Tpi.Api.Controllers
         {
             var orden = await _service.GetOrderById(id);
             if (orden == null) {
-                throw new EntityNotFoundException("Order not found.");
+                return NotFound("Order not found.");
             }
             return Ok(orden);
         }
@@ -61,9 +67,6 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] string status)
         {
             var updatedOrder = await _service.UpdateOrderStatus(id, status);
-            if (updatedOrder == null) {
-                throw new EntityNotFoundException("Order not found.");
-            }  
             return Ok(updatedOrder);
         }
     }

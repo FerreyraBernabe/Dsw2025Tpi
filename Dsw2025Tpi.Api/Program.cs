@@ -26,7 +26,7 @@ public class Program
         builder.Services.AddTransient<ExceptionMiddleware>();
 
         // Add services to the container.
-        
+
         builder.Services.AddControllers()
             .ConfigureApiBehaviorOptions(options =>
             {
@@ -74,7 +74,7 @@ public class Program
                     return new BadRequestObjectResult(errorResponse);
                 };
             });
-        
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
@@ -145,7 +145,7 @@ public class Program
 
         builder.Services.AddDomainServices(builder.Configuration);
          
-        builder.Services.AddSingleton<JwtTokenService>();
+        builder.Services.AddScoped<AuthenticateService>();
 
          builder.Services.AddDbContext<AuthenticateContext>(options =>
         {

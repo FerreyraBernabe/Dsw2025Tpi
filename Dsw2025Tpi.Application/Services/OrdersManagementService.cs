@@ -44,6 +44,9 @@ namespace Dsw2025Tpi.Application.Services
                 
                 var product = await _repository.GetById<Product>(item.ProductId)
                     ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}");
+                
+                if(!product.IsActive)
+                    throw new EntityNotFoundException($"The following product is deactivated: {product.Name}");
 
                 if (product.StockQuantity < item.Quantity)
                     throw new InvalidOperationException($"Insufficient stock for the product: {product.Name}");

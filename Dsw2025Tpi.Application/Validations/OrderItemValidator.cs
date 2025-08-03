@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ValidationException=Dsw2025Tpi.Application.Exceptions.ValidationException;
 
 namespace Dsw2025Tpi.Application.Validation
 {
@@ -11,14 +12,24 @@ namespace Dsw2025Tpi.Application.Validation
     {
         public static void Validate(OrderItemModel.OrderItemRequest item)
         {
+            var errors = new List<string>();
+
             if (item == null)
-                throw new InvalidOperationException("The Order Item can not be null.");
+            {
+                throw new InvalidOperationException("The Order Item cannot be null.");
+            }
+            else
+            {
+                if (item.ProductId == Guid.Empty)
+                    errors.Add("Product is mandatory.");
 
-           if (item.ProductId == Guid.Empty)
-                throw new InvalidOperationException("Product is mandatory.");
+                if (item.Quantity <= 0)
+                    errors.Add("The quantity must be above zero.");
 
-            if (item.Quantity <= 0)
-                throw new InvalidOperationException("The quantity must be above zero.");
+                if (errors.Any())
+                    throw new ValidationException("One or more validation errors occurred.", errors);
+            }
+
         }
     }
 }

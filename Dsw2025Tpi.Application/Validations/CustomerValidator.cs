@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ValidationException=Dsw2025Tpi.Application.Exceptions.ValidationException;
 
 namespace Dsw2025Tpi.Application.Validation
 {
@@ -11,17 +12,27 @@ namespace Dsw2025Tpi.Application.Validation
     {
         public static void Validate(CustomerModel.Request request)
         {
+            var errors = new List<string>();
+
             if (request == null)
-                throw new InvalidOperationException("TThe customer request body can not be null.");
+            {
+                throw new InvalidOperationException("The customer request body cannot be null.");
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    errors.Add("Name is mandatory.");
 
-            if (string.IsNullOrWhiteSpace(request.Name))
-                throw new InvalidOperationException("Name is mandatory.");
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    errors.Add("Email is mandatory.");
 
-            if (string.IsNullOrWhiteSpace(request.Email))
-                throw new InvalidOperationException("Email is mandatory.");
+                if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+                    errors.Add("PhoneNumber is mandatory.");
 
-            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
-                throw new InvalidOperationException("PhoneNumber is mandatory.");
+                if (errors.Any())
+                    throw new ValidationException("One or more validation errors occurred.", errors);
+            }
+
         }
     }
 }

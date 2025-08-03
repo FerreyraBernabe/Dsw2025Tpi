@@ -37,7 +37,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var products = await _service.GetAllProducts();
-        if (products == null || !products.Any()) throw new NoContentException("No products registered.");
+        if (products == null || !products.Any()) return NoContent();
         return Ok(products);
     }
 
@@ -69,7 +69,8 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PatchProduct(Guid id)
     {        
-         var product = await _service.DeactivateProduct(id);           
-         return NoContent();
+        var product = await _service.DeactivateProduct(id);
+        Response.Headers.Append("X-Message", "Deactivated product.");
+        return NoContent();
     }
 }

@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dsw2025Tpi.Application.Dtos
+namespace Dsw2025Tpi.Application.Dtos;
+
+public record RegisterModel
 {
-    public record RegisterModel(string Username, string Password, string Email);
+    public record RequestRegister(string Username, string Password, string Email);
+    public record ResponseRegister();
 }
