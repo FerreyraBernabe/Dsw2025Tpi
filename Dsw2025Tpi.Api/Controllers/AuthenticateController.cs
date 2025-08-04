@@ -32,6 +32,7 @@ public class AuthenticateController : ControllerBase
         return Ok(token);
     }
 
+
     //Registro de usuario
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel.RequestRegister model)

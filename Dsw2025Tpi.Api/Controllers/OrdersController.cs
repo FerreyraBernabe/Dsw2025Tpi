@@ -14,9 +14,9 @@ namespace Dsw2025Tpi.Api.Controllers
     [Route("api/orders")]
     public class OrdersController : ControllerBase
     {
-        private readonly OrdersManagementService _service;
+        private readonly IOrdersManagementService _service;
 
-        public OrdersController(OrdersManagementService service)
+        public OrdersController(IOrdersManagementService service)
         {
             _service = service;
         }
@@ -61,10 +61,11 @@ namespace Dsw2025Tpi.Api.Controllers
             return Ok(orden);
         }
 
+
         //punto 9 
         [HttpPut("{id:guid}/status")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] string status)
+        public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromQuery] string status)
         {
             var updatedOrder = await _service.UpdateOrderStatus(id, status);
             return Ok(updatedOrder);

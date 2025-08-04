@@ -61,16 +61,13 @@ public class ProductsManagementService : IProductsManagementService
         var existSku = await _repository.First<Product>(p => p.Sku == request.Sku);
         var existInternalCode = await _repository.First<Product>(p => p.InternalCode == request.InternalCode);
 
-        if (existSku != null)
-        {
+        if (existSku != null) {
             throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
         }
-        if (existInternalCode != null)
-        {
+
+        if (existInternalCode != null)  {
             throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
         }
-
-        var description = request.Description ?? string.Empty;
 
         var product = new Product(request.Sku, request.InternalCode, request.Name, request.Description, request.CurrentUnitPrice, request.StockQuantity);
         await _repository.Add(product);
@@ -106,10 +103,10 @@ public class ProductsManagementService : IProductsManagementService
    public async Task<ProductModel.Response?> DeactivateProduct(Guid id)
     {
 
-        var product = await _repository.GetById<Product>(id)
+       var product = await _repository.GetById<Product>(id)
                       ?? throw new EntityNotFoundException("Product not found.");
 
-        product.IsActive = false;
+       product.IsActive = false;
        var updated = await _repository.Update(product);
 
         return new ProductModel.Response(

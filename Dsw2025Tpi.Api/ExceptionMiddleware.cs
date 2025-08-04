@@ -74,6 +74,18 @@ public class ExceptionMiddleware : IMiddleware
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 //public class ExceptionMiddleware : IMiddleware
 //{
 //    public async Task InvokeAsync(HttpContext context, RequestDelegate next)

@@ -8,7 +8,7 @@ namespace Dsw2025Tpi.Domain.Entities;
 public class Product : EntityBase
 {
 
-    public Product(string sku, string internalCode, string name, string? description, decimal currentUnitPrice, int stockQuantity)
+    public Product(string sku, string internalCode, string name, string description, decimal currentUnitPrice, int stockQuantity)
     {
         Id = Guid.NewGuid();
         Sku = sku;
@@ -25,7 +25,7 @@ public class Product : EntityBase
     public decimal CurrentUnitPrice { get; set; }
     public int StockQuantity{ get; set;}
     public string InternalCode { get; set; }
-    public string? Description { get; set; }
+    public string Description { get; set; }
     public bool IsActive { get; set; }
     public ICollection<OrderItem>? Items { get; set; }
 }

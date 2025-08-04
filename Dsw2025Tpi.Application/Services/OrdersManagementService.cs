@@ -46,12 +46,13 @@ namespace Dsw2025Tpi.Application.Services
                     ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}");
                 
                 if(!product.IsActive)
-                    throw new EntityNotFoundException($"The following product is deactivated: {product.Name}");
+                    throw new EntityNotFoundException($"The following product is not available: {product.Name}");
 
                 if (product.StockQuantity < item.Quantity)
                     throw new InvalidOperationException($"Insufficient stock for the product: {product.Name}");
 
                 product.StockQuantity -= item.Quantity;
+
                 await _repository.Update(product);
 
                 var orderItem = new OrderItem
@@ -96,7 +97,7 @@ namespace Dsw2025Tpi.Application.Services
 
             return new OrderModel.Response(
                 order.Id,
-                order.CustomerId ?? Guid.Empty,
+                order.CustomerId,
                 order.ShippingAddress,
                 order.BillingAddress,
                 order.Date,
@@ -124,7 +125,7 @@ namespace Dsw2025Tpi.Application.Services
             )).ToList();
             return new OrderModel.Response(
                 order.Id,
-                order.CustomerId ?? Guid.Empty,
+                order.CustomerId,
                 order.ShippingAddress,
                 order.BillingAddress,
                 order.Date,
@@ -141,12 +142,21 @@ namespace Dsw2025Tpi.Application.Services
             var orders = (await _repository.GetAll<Order>("OrderItems", "OrderItems.Product"))?.ToList()
                 ?? new List<Order>();
 
-            if (customerId.HasValue && customerId.Value != Guid.Empty)
+            if (customerId.HasValue && customerId.Value != Guid.Empty) { 
                 orders = orders.Where(o => o.CustomerId == customerId.Value).ToList();
+            }
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrEmpty(status)) {
+
+                if (!Enum.TryParse<OrderStatus>(status, true, out var newStatus))   {
+
+                   throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
+                }
+
                 orders = orders.Where(o => o.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
 
+            }
+            
             var total = orders.Count;
             var items = orders
                 .Skip((page - 1) * pageSize)
@@ -165,7 +175,7 @@ namespace Dsw2025Tpi.Application.Services
 
                     return new OrderModel.Response(
                         order.Id,
-                        order.CustomerId ?? Guid.Empty,
+                        order.CustomerId,
                         order.ShippingAddress,
                         order.BillingAddress,
                         order.Date,
@@ -188,10 +198,10 @@ namespace Dsw2025Tpi.Application.Services
 
             // Validar y actualizar el estado
             if (string.IsNullOrWhiteSpace(status))
-                throw new BadRequestException("You must specify a valid status.");
+                throw new BadRequestException("You must specify a valid status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
 
             if (!Enum.TryParse<OrderStatus>(status, true, out var newStatus))
-                throw new InvalidOperationException("Invalid Status.");
+                throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
 
             order.Status = newStatus;
             var updated = await _repository.Update(order);
@@ -208,7 +218,7 @@ namespace Dsw2025Tpi.Application.Services
 
             return new OrderModel.Response(
                 updated.Id,
-                updated.CustomerId ?? Guid.Empty,
+                updated.CustomerId,
                 updated.ShippingAddress,
                 updated.BillingAddress,
                 updated.Date,

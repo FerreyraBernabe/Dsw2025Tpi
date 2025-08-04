@@ -21,7 +21,7 @@ namespace Dsw2025Tpi.Domain.Entities
            string billingAddress,
            string? notes,
            decimal totalAmount, 
-           Guid? customerId)
+           Guid customerId)
         {
             Id = Guid.NewGuid();
             Date = date;
@@ -40,7 +40,7 @@ namespace Dsw2025Tpi.Domain.Entities
         public string BillingAddress { get; set; }
         public string? Notes { get; set; }
         public decimal TotalAmount { get; set; }
-        public Guid? CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
     }

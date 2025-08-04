@@ -1,5 +1,6 @@
 ﻿using Dsw2025Tpi.Application.Dtos;
 using Dsw2025Tpi.Application.Exceptions;
+using Dsw2025Tpi.Application.Interfaces;
 using Dsw2025Tpi.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ namespace Dsw2025Tpi.Api.Controllers;
 [Route("api/products")]
 public class ProductsController : ControllerBase
 {
-    private readonly ProductsManagementService _service;
+    private readonly IProductsManagementService _service;
 
-    public ProductsController(ProductsManagementService service)
+    public ProductsController(IProductsManagementService service)
     {
         _service = service;
     }

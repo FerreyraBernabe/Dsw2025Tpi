@@ -47,12 +47,12 @@ public class Program
                                     // Detecta si el error es de conversión de tipo (por ejemplo, Guid)
                                     if (error.ErrorMessage.Contains("could not be converted to"))
                                     {
-                                        return $"{fieldName} has an invalid format. Check request model.";
+                                        return ($"{fieldName} has an invalid format. Check request model.");
                                     }
                                     // O si el error es de JSON (por ejemplo, un valor nulo para un tipo no nulo)
                                     else if (error.ErrorMessage.Contains("The JSON value could not be converted to"))
                                     {
-                                        return $"{fieldName} has an invalid format. Check request model.";
+                                        return ($"{fieldName} has an invalid format. Check request model.");
                                     }
                                     // Si no es un error de conversión, usa el mensaje original
                                     return error.ErrorMessage;
@@ -105,8 +105,9 @@ public class Program
                         },
                         Array.Empty<string>()
                     }
-                });
+            });
         });
+
         builder.Services.AddHealthChecks();
 
         builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
