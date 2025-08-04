@@ -54,13 +54,17 @@ public class ExceptionMiddleware : IMiddleware
                     break;
             }
 
-            var errorResponse = new
-            {
-                status = (int)statusCode,
-                title = title,
-                detail = detail,
-                errors = errors
-            };
+            var errorResponse = errors != null
+            ? (object)new { status = (int)statusCode, title = title, detail = detail, errors = errors }
+            : new { status = (int)statusCode, title = title, detail = detail };
+
+            //var errorResponse = new
+            //{
+            //    status = (int)statusCode,
+            //    title = title,
+            //    detail = detail,
+            //    errors = errors
+            //};
 
             context.Response.StatusCode = (int)statusCode;
 
