@@ -30,8 +30,25 @@ namespace Dsw2025Tpi.Application.Validations
                 if (string.IsNullOrWhiteSpace(model.Email))
                     errors.Add("Email is mandatory.");
 
-                if (!IsValidEmail(model.Email))
-                    errors.Add("Email format is not valid.");
+                if (!model.Email.Contains('@'))
+                {
+                    errors.Add("Email format is not valid: '@' symbol is missing.");
+                }
+                else if (!model.Email.Split('@')[1].Contains('.'))
+                {
+                    errors.Add("Email format is not valid: domain must contain a '.' (e.g., '.com').");
+                }
+                else
+                {
+                    var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+(\.[^@\s]+)*$", RegexOptions.IgnoreCase);
+                    if (!emailRegex.IsMatch(model.Email))
+                    {
+                        errors.Add("Email format is not valid.");
+                    }
+                }
+
+                //if (!IsValidEmail(model.Email))
+                //    errors.Add("Email format is not valid.");
 
                 if (string.IsNullOrWhiteSpace(model.Password))
                 {
@@ -64,18 +81,18 @@ namespace Dsw2025Tpi.Application.Validations
             }
 
         }
-
-        private static bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 }
+
+    //    private static bool IsValidEmail(string email)
+    //    {
+    //        try
+    //        {
+    //            var addr = new System.Net.Mail.MailAddress(email);
+    //            return addr.Address == email;
+    //        }
+    //        catch
+    //        {
+    //            return false;
+    //        }
+    //    }
