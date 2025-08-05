@@ -19,7 +19,7 @@ public class ExceptionMiddleware : IMiddleware
             context.Response.ContentType = "application/json";
 
             var statusCode = HttpStatusCode.InternalServerError;
-            object errors = null;
+            object errors = null!;
             string title = "Internal Server Error";
             string detail = e.Message;
 

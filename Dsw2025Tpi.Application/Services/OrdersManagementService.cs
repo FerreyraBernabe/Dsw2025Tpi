@@ -123,6 +123,7 @@ namespace Dsw2025Tpi.Application.Services
                 oi.Price,
                 oi.Price * oi.Quantity
             )).ToList();
+
             return new OrderModel.Response(
                 order.Id,
                 order.CustomerId,
@@ -137,32 +138,32 @@ namespace Dsw2025Tpi.Application.Services
 
         }
 
-         public async Task<Dtos.PagedResult<OrderModel.Response>> GetAllOrders(int page, int pageSize, string? status, Guid? customerId = null)
+        public async Task<OrderModel.GetOrderResponse> GetAllOrders(OrderModel.GetOrder request)
         {
             var orders = (await _repository.GetAll<Order>("OrderItems", "OrderItems.Product"))?.ToList()
                 ?? new List<Order>();
 
-            if (customerId.HasValue && customerId.Value != Guid.Empty) { 
-                orders = orders.Where(o => o.CustomerId == customerId.Value).ToList();
+            if (request.CustomerId.HasValue && request.CustomerId.Value != Guid.Empty) {
+                orders = orders.Where(o => o.CustomerId == request.CustomerId.Value).ToList();
             }
 
-            if (!string.IsNullOrEmpty(status)) {
-
-                if (!Enum.TryParse<OrderStatus>(status, true, out var newStatus))   {
-
-                   throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
+            if (!string.IsNullOrEmpty(request.Status))  {
+                if (!Enum.TryParse<OrderStatus>(request.Status, true, out var newStatus)) {
+                    throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
                 }
-
-                orders = orders.Where(o => o.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
-
+                orders = orders.Where(o => o.Status.ToString().Equals(request.Status, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-            
+
+            int page = request.Page ?? 1; // Usar valores por defecto
+            int pageSize = request.PageSize ?? 10; 
+
             var total = orders.Count;
             var items = orders
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(order =>
                 {
+
                     var responseItems = order.OrderItems.Select(oi => new OrderItemModel.Response(
                         oi.Id,
                         oi.ProductId,
@@ -187,7 +188,7 @@ namespace Dsw2025Tpi.Application.Services
                 })
                 .ToList();
 
-            return new Dtos.PagedResult<OrderModel.Response>(items, total, page, pageSize);
+            return new OrderModel.GetOrderResponse(items, total, page, pageSize);
         }
 
 

@@ -36,16 +36,15 @@ namespace Dsw2025Tpi.Api.Controllers
         //punto 7
         [HttpGet(Name = "GetAllOrders")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? status = null, [FromQuery] Guid? customerId = null)
+        public async Task<IActionResult> GetAllOrders([FromQuery] OrderModel.GetOrder request)
         {
-            var result = await _service.GetAllOrders(page, pageSize, status, customerId);
-            if (result == null || !result.Purchases.Any()) {
+            var result = await _service.GetAllOrders(request);
+            if (result == null || result.Items == null || !result.Items.Any()) {
                 Response.Headers.Append("X-Message", "There are no active orders");
                 return NoContent();
             }
 
             return Ok(result);
-            
         }
 
 

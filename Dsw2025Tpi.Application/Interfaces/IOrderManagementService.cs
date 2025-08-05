@@ -7,7 +7,7 @@ namespace Dsw2025Tpi.Application.Interfaces
     {
         Task<OrderModel.Response> CreateOrderAsync(OrderModel.OrderRequest request);
         Task<OrderModel.Response?> GetOrderById(Guid id);
-        Task<Dtos.PagedResult<OrderModel.Response>> GetAllOrders(int page, int pageSize, string? status, Guid? customerId);
+        Task<OrderModel.GetOrderResponse> GetAllOrders(OrderModel.GetOrder request);
         Task<OrderModel.Response> UpdateOrderStatus(Guid id, string status);
     }
 }

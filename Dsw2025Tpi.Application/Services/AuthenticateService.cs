@@ -109,7 +109,6 @@ public class AuthenticateService : IAuthenticateService
         if (!roleResult.Succeeded)
         {
             // En caso de que la asignación de rol falle.
-            var roleErrors = roleResult.Errors.Select(e => e.Description).ToList();
             throw new ApplicationException("Could not assign user role.");
         }
 

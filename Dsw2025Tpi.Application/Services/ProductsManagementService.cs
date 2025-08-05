@@ -78,7 +78,21 @@ public class ProductsManagementService : IProductsManagementService
     {
         ProductValidator.Validate(request);
 
-        var product = await _repository.GetById<Product>(id) ?? throw new EntityNotFoundException("Product not found.");
+        var product = await _repository.GetById<Product>(id) 
+            ?? throw new EntityNotFoundException("Product not found.");
+
+        var existSku = await _repository.First<Product>(p => p.Sku == request.Sku);
+        var existInternalCode = await _repository.First<Product>(p => p.InternalCode == request.InternalCode);
+
+        if (existSku != null)
+        {
+            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
+        }
+
+        if (existInternalCode != null)
+        {
+            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
+        }
 
         product.Sku = request.Sku;
         product.InternalCode = request.InternalCode;
@@ -88,6 +102,7 @@ public class ProductsManagementService : IProductsManagementService
         product.StockQuantity = request.StockQuantity;
 
         var updated = await _repository.Update(product);
+
         return new ProductModel.Response(
             updated.Id,
             updated.Sku,
