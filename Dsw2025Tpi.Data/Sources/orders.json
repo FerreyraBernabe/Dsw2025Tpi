@@ -6,7 +6,7 @@
     "billingAddress": "Calle Verdadera 456",
     "date": "2024-06-01T10:00:00Z",
     "notes": "Compra Personalizada",
-    "totalAmount": 12587.2,
+    "totalAmount": 25170.4,
     "status": 0
   },
   {
@@ -16,7 +16,7 @@
     "billingAddress": "Av. Siempre Viva 742",
     "date": "2024-06-02T15:30:00Z",
     "notes": "Pedido Especial",
-    "totalAmount": 2761.6,
+    "totalAmount": 11254.4,
     "status": 0
   }
 ]

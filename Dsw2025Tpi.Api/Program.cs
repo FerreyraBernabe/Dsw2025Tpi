@@ -66,7 +66,7 @@ public class Program
                     var errorResponse = new
                     {
                         Status = 400,
-                        Title = "Validation Failed",
+                        Title = "Bad Request",
                         Detail = "One or more validation errors occurred.",
                         Errors = errors
                     };

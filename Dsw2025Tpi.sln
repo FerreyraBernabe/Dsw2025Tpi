@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{BC65CBE5-E
 		OrderCreate_Case4.json = OrderCreate_Case4.json
 		OrderCreate_Case5.json = OrderCreate_Case5.json
 		OrderCreate_Case6.json = OrderCreate_Case6.json
+		OrderCreate_Case7.json = OrderCreate_Case7.json
 		ProductCreate_Case1.json = ProductCreate_Case1.json
 		ProductCreate_Case2.json = ProductCreate_Case2.json
 		ProductCreate_Case3.json = ProductCreate_Case3.json

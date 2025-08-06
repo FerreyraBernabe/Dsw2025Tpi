@@ -27,7 +27,6 @@ public class AuthenticateController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel.RequestLogin request)
     {
-
         var token = await _service.Login(request);
         return Ok(token);
     }

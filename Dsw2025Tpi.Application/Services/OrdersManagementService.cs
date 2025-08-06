@@ -101,7 +101,7 @@ namespace Dsw2025Tpi.Application.Services
                 order.ShippingAddress,
                 order.BillingAddress,
                 order.Date,
-                order.Notes,
+                order.Notes ?? "",
                 order.TotalAmount,
                 order.Status.ToString(),
                 responseItems
@@ -112,7 +112,7 @@ namespace Dsw2025Tpi.Application.Services
         {
 
             var order = await _repository.GetById<Order>(id, nameof(Order.OrderItems), "OrderItems.Product");
-            if (order == null) throw new EntityNotFoundException($"Order not found");
+            if (order == null) throw new EntityNotFoundException($"Order not found: {id}");
 
             var responseItems = order.OrderItems.Select(oi => new OrderItemModel.Response(
                 oi.Id,
@@ -130,7 +130,7 @@ namespace Dsw2025Tpi.Application.Services
                 order.ShippingAddress,
                 order.BillingAddress,
                 order.Date,
-                order.Notes,
+                order.Notes ?? "",
                 order.TotalAmount,
                 order.Status.ToString(),
                 responseItems
@@ -143,7 +143,12 @@ namespace Dsw2025Tpi.Application.Services
             var orders = (await _repository.GetAll<Order>("OrderItems", "OrderItems.Product"))?.ToList()
                 ?? new List<Order>();
 
-            if (request.CustomerId.HasValue && request.CustomerId.Value != Guid.Empty) {
+            if (request.CustomerId.HasValue && request.CustomerId.Value != Guid.Empty)
+            {
+                // Verificar si el cliente existe
+                var customer = await _repository.GetById<Customer>((Guid)request.CustomerId)
+                   ?? throw new EntityNotFoundException($"Customer not found: {request.CustomerId}");
+
                 orders = orders.Where(o => o.CustomerId == request.CustomerId.Value).ToList();
             }
 
@@ -180,13 +185,13 @@ namespace Dsw2025Tpi.Application.Services
                         order.ShippingAddress,
                         order.BillingAddress,
                         order.Date,
-                        order.Notes,
+                        order.Notes ?? "",
                         order.TotalAmount,
                         order.Status.ToString(),
                         responseItems
                     );
                 })
-                .ToList();
+                .ToList().OrderBy(o=>o.Date);
 
             return new OrderModel.GetOrderResponse(items, total, page, pageSize);
         }
@@ -195,7 +200,7 @@ namespace Dsw2025Tpi.Application.Services
         public async Task<OrderModel.Response> UpdateOrderStatus(Guid id, string status)
         {
             var order = await _repository.GetById<Order>(id, nameof(Order.OrderItems), "OrderItems.Product")
-             ?? throw new EntityNotFoundException("Order not found.");
+             ?? throw new EntityNotFoundException($"Order not found: {id}");
 
             // Validar y actualizar el estado
             if (string.IsNullOrWhiteSpace(status))
@@ -223,7 +228,7 @@ namespace Dsw2025Tpi.Application.Services
                 updated.ShippingAddress,
                 updated.BillingAddress,
                 updated.Date,
-                updated.Notes,
+                updated.Notes ?? "",
                 updated.TotalAmount,
                 updated.Status.ToString(),
                 responseItems

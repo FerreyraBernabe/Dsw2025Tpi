@@ -51,7 +51,7 @@ public class ProductsManagementService : IProductsManagementService
             p.CurrentUnitPrice,
             p.StockQuantity,
             p.IsActive
-        ));
+        )).OrderBy(p =>p.Sku);
     }
 
     public async Task<ProductModel.Response> AddProduct(ProductModel.Request request)
@@ -69,9 +69,27 @@ public class ProductsManagementService : IProductsManagementService
             throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
         }
 
-        var product = new Product(request.Sku, request.InternalCode, request.Name, request.Description, request.CurrentUnitPrice, request.StockQuantity);
+        var product = new Product(
+            request.Sku, 
+            request.InternalCode, 
+            request.Name, 
+            request.Description, 
+            request.CurrentUnitPrice, 
+            request.StockQuantity
+        );
+        
         await _repository.Add(product);
-        return new ProductModel.Response(product.Id, product.Sku, product.InternalCode, product.Name, product.Description, product.CurrentUnitPrice, product.StockQuantity, product.IsActive);
+
+        return new ProductModel.Response(
+            product.Id, 
+            product.Sku, 
+            product.InternalCode, 
+            product.Name, 
+            product.Description, 
+            product.CurrentUnitPrice, 
+            product.StockQuantity, 
+            product.IsActive
+        );
     }
 
    public async Task<ProductModel.Response> UpdateProduct(Guid id, ProductModel.Request request)
@@ -84,12 +102,12 @@ public class ProductsManagementService : IProductsManagementService
         var existSku = await _repository.First<Product>(p => p.Sku == request.Sku);
         var existInternalCode = await _repository.First<Product>(p => p.InternalCode == request.InternalCode);
 
-        if (existSku != null)
+        if (existSku != null && !(existSku.Id == id))
         {
             throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
         }
 
-        if (existInternalCode != null)
+        if (existInternalCode != null && !(existInternalCode.Id == id))
         {
             throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
         }

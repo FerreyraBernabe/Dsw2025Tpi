@@ -18,6 +18,8 @@ namespace Dsw2025Tpi.Domain.Entities
             Description = description;
             Price = price;
         }
+
+        //Realizar migracion para retirar el campo Descripcion
         public Guid OrderId { get; set; }
         public Order? Order { get; set; }
         public Guid ProductId { get; set; }

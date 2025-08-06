@@ -28,8 +28,7 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> CreateOrderAsync([FromBody] OrderModel.OrderRequest request)
         {
             var order = await _service.CreateOrderAsync(request);
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
-           
+            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);           
         }
 
 
@@ -54,9 +53,6 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> GetOrderById(Guid id)
         {
             var orden = await _service.GetOrderById(id);
-            if (orden == null) {
-                return NotFound("Order not found.");
-            }
             return Ok(orden);
         }
 

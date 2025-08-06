@@ -5,10 +5,7 @@
   "orderItems": [
     {
       "productId": "", //Completar
-      "quantity": 2,
-      "name": "Wireless Mouse",
-      "description": "Ergonomic wireless mouse",
-      "unitPrice": 25.99
+      "quantity": 2
     }
   ]
 }
