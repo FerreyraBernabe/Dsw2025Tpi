@@ -23,11 +23,17 @@ namespace Dsw2025Tpi.Application.Validation
                 if (string.IsNullOrWhiteSpace(request.Name))
                     errors.Add("Name is mandatory.");
 
+                if (request.Name.Length < 3 || request.Name.Length > 100)
+                    errors.Add("Name must be between 3 and 100 characters long.");
+
                 if (string.IsNullOrWhiteSpace(request.Email))
                     errors.Add("Email is mandatory.");
 
                 if (string.IsNullOrWhiteSpace(request.PhoneNumber))
                     errors.Add("PhoneNumber is mandatory.");
+
+                if (request.PhoneNumber.Length < 10 || request.PhoneNumber.Length > 15)
+                    errors.Add("PhoneNumber must be between 10 and 15 characters long.");
 
                 if (errors.Any())
                     throw new ValidationException("One or more validation errors occurred.", errors);

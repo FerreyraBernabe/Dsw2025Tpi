@@ -24,29 +24,36 @@ namespace Dsw2025Tpi.Application.Validation
             else
             {
                 if (request.CustomerId == Guid.Empty)
-                {
-                    errors.Add("CustomerID is mandatory.");
-                }
+                   errors.Add("CustomerID is mandatory.");
 
-                if (string.IsNullOrWhiteSpace(request.ShippingAddress) || request.ShippingAddress.Length > 256)
-                {
-                    errors.Add("The shipping address is required and cannot exceed 256 characters.");
-                }
+                if (string.IsNullOrWhiteSpace(request.ShippingAddress))
+                   errors.Add("The Shipping Address is required.");
+                else if (request.ShippingAddress.Equals("string", StringComparison.OrdinalIgnoreCase))
+                   errors.Add("Shipping Address cannot be 'string'.");
+                else if (request.ShippingAddress.StartsWith(' ') || request.ShippingAddress.EndsWith(' '))
+                    errors.Add("The Shipping Address cannot begin or end with a blank space.");
 
-                if (string.IsNullOrWhiteSpace(request.BillingAddress) || request.BillingAddress.Length > 256)
-                {
-                    errors.Add("The billing address is required and cannot exceed 256 characters.");
-                }
+                if (request.ShippingAddress.Length > 256)
+                    errors.Add("The shipping address cannot exceed 256 characters.");
+
+                if (string.IsNullOrWhiteSpace(request.BillingAddress))
+                    errors.Add("The Billing Address is required.");
+                else if (request.BillingAddress.Equals("string", StringComparison.OrdinalIgnoreCase))
+                    errors.Add("BillingAdress cannot be 'string'.");
+                else if (request.BillingAddress.StartsWith(' ') || request.BillingAddress.EndsWith(' '))
+                    errors.Add("The Billing Address cannot begin or end with a blank space.");
+
+                if (request.BillingAddress.Length > 256)
+                    errors.Add("The billing address cannot exceed 256 characters.");
+
+                if (!(string.IsNullOrWhiteSpace(request.Notes)) && (request.Notes.Equals("string", StringComparison.OrdinalIgnoreCase)))
+                    errors.Add("Notes cannot be 'string'.");
 
                 if (request.OrderItems == null || request.OrderItems.Count == 0)
-                {
                     errors.Add("Must include at least one item in the order.");
-                }
 
                 if (errors.Any())
-                {
                     throw new ValidationException("One or more validation errors occurred.", errors);
-                }
 
             }
 

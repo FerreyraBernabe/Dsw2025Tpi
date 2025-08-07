@@ -26,6 +26,12 @@ namespace Dsw2025Tpi.Application.Validation
                 if (item.Quantity <= 0)
                     errors.Add("The quantity must be above zero.");
 
+                if (item.Quantity > 100)
+                    errors.Add("The quantity cannot exceed 100 units.");
+                
+                 if (item.Quantity % 1 != 0)
+                    errors.Add("The quantity must be a whole number.");
+
                 if (errors.Any())
                     throw new ValidationException("One or more validation errors occurred.", errors);
             }

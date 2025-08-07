@@ -46,10 +46,10 @@ namespace Dsw2025Tpi.Application.Services
                     ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}");
                 
                 if(!product.IsActive)
-                    throw new EntityNotFoundException($"The following product is not available: {product.Name}");
+                    throw new EntityNotFoundException($"The following product is not available: {product.Id}");
 
                 if (product.StockQuantity < item.Quantity)
-                    throw new InvalidOperationException($"Insufficient stock for the product: {product.Name}");
+                    throw new InvalidOperationException($"Insufficient stock for the product: {product.Id}");
 
                 product.StockQuantity -= item.Quantity;
 
