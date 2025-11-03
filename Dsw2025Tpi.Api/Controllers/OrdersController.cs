@@ -24,7 +24,7 @@ namespace Dsw2025Tpi.Api.Controllers
 
         //punto 6
         [HttpPost()]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> CreateOrderAsync([FromBody] OrderModel.OrderRequest request)
         {
             var order = await _service.CreateOrderAsync(request);
@@ -34,7 +34,7 @@ namespace Dsw2025Tpi.Api.Controllers
 
         //punto 7
         [HttpGet(Name = "GetAllOrders")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetAllOrders([FromQuery] OrderModel.GetOrder request)
         {
             var result = await _service.GetAllOrders(request);
@@ -49,7 +49,7 @@ namespace Dsw2025Tpi.Api.Controllers
 
         //punto 8
         [HttpGet("{id:guid}", Name = "GetOrderById")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetOrderById(Guid id)
         {
             var orden = await _service.GetOrderById(id);

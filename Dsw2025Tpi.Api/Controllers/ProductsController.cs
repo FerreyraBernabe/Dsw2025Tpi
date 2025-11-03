@@ -34,7 +34,7 @@ public class ProductsController : ControllerBase
 
     //punto 2
     [HttpGet()]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductModel.GetProduct request)
     {
         var products = await _service.GetAllProducts(request);
@@ -45,7 +45,7 @@ public class ProductsController : ControllerBase
    
     // punto 3
     [HttpGet("{id:guid}", Name = "GetProductById")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {
         var product = await _service.GetProductById(id);        

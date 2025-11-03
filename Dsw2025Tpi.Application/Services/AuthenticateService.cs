@@ -95,6 +95,16 @@ public class AuthenticateService : IAuthenticateService
             throw new DuplicatedEntityException("A user with this username or email already exists.");
         }
 
+        // FIX: Usar GetChildren para obtener la lista de roles
+        var allowedRoles = _config.GetSection("Roles").GetChildren().Select(r => r.Value).ToList();
+
+        var requestedRole = model.Role.Trim();
+
+        if (!allowedRoles.Contains(requestedRole))
+        {
+            throw new ValidationException("The specified role is not valid.", new List<string> { "Role must be one of the predefined roles." });
+        }
+
         var user = new IdentityUser { UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -104,7 +114,9 @@ public class AuthenticateService : IAuthenticateService
             throw new ValidationException("One or more Identity validation errors occurred.", identityErrors);
         }
 
-        var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
+        var roleToAssign = requestedRole;
+
+        var roleResult = await _userManager.AddToRoleAsync(user, roleToAssign!);
 
         if (!roleResult.Succeeded)
         {
