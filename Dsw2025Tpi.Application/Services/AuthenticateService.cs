@@ -76,7 +76,7 @@ public class AuthenticateService : IAuthenticateService
 
         var token = GenerateToken(request.Username, role);
 
-        return new LoginModel.ResponseLogin(token);
+        return new LoginModel.ResponseLogin(token,role);
     }
     public async Task<RegisterModel.ResponseRegister> Register(RegisterModel.RequestRegister model)
     {
