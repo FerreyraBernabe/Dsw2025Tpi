@@ -21,10 +21,7 @@ namespace Dsw2025Tpi.Application.Validations
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(model.Username))
-                    errors.Add("Username is mandatory.");
-
-                if (model.Username.Length < 4)
+                if (string.IsNullOrWhiteSpace(model.Username)|| model.Username.Length < 4)
                     errors.Add("Username must be at least 4 characters long.");
 
                 if (string.IsNullOrWhiteSpace(model.Email))
@@ -50,14 +47,9 @@ namespace Dsw2025Tpi.Application.Validations
                 //if (!IsValidEmail(model.Email))
                 //    errors.Add("Email format is not valid.");
 
-                if (string.IsNullOrWhiteSpace(model.Password))
-                {
-                    errors.Add("Password is mandatory.");
-                }
-                else if (model.Password.Length < 8)
-                {
-                    errors.Add("Password must be at least 8 characters long.");
-                }
+                if (string.IsNullOrWhiteSpace(model.Password)|| model.Password.Length < 8)
+                errors.Add("Password must be at least 8 characters long.");
+                
 
                 var hasNumber = new Regex(@"[0-9]+");
                 var hasUpperChar = new Regex(@"[A-Z]+");
