@@ -39,19 +39,33 @@ public class ProductsManagementService : IProductsManagementService
         );
     }
 
-    public async Task<IEnumerable<ProductModel.Response>?> GetAllProducts()
+    public async Task<ProductModel.GetProductResponse> GetAllProducts(ProductModel.GetProduct request)
     {
         var products = await _repository.GetFiltered<Product>(p => p.IsActive);
-        return products?.Select(p => new ProductModel.Response(
-            p.Id,
-            p.Sku,
-            p.InternalCode,
-            p.Name,
-            p.Description,
-            p.CurrentUnitPrice,
-            p.StockQuantity,
-            p.IsActive
-        )).OrderBy(p =>p.Sku);
+
+        var orderedProducts = products?.OrderBy(p => p.Sku).ToList(); // Añadir ToList() para materializar la colección
+
+        int page = request.Page ?? 1; // Usar valores por defecto
+        int pageSize = request.PageSize ?? 10;
+
+        var total = orderedProducts?.Count ?? 0; // Usar operador null-coalescing
+
+        var pagedProducts = orderedProducts?
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize);
+
+        var items = pagedProducts?.Select(product => new ProductModel.Response(
+            product.Id,
+            product.Sku,
+            product.InternalCode,
+            product.Name,
+            product.Description,
+            product.CurrentUnitPrice,
+            product.StockQuantity,
+            product.IsActive
+        )).ToList();
+
+        return new ProductModel.GetProductResponse(items, total, page, pageSize);
     }
 
     public async Task<ProductModel.Response> AddProduct(ProductModel.Request request)

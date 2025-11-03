@@ -35,10 +35,10 @@ public class ProductsController : ControllerBase
     //punto 2
     [HttpGet()]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAllProductsAsync()
+    public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductModel.GetProduct request)
     {
-        var products = await _service.GetAllProducts();
-        if (products == null || !products.Any()) return NoContent();
+        var products = await _service.GetAllProducts(request);
+        if (products == null) return NoContent();
         return Ok(products);
     }
 
