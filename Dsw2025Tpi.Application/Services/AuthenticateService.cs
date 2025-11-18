@@ -102,17 +102,38 @@ public class AuthenticateService : IAuthenticateService
 
         if (!allowedRoles.Contains(requestedRole))
         {
-            throw new ValidationException("The specified role is not valid.", new List<string> { "Role must be one of the predefined roles." });
+            var errors = new List<ValidationError>
+            {
+                new ValidationError(
+                    "Role must be one of the predefined roles.",
+                    ValidationErrorCodes.RoleInvalid)
+            };
+
+            throw new ValidationException("The specified role is not valid.", errors);
         }
+
+        //if (!allowedRoles.Contains(requestedRole))
+        //{
+        //    throw new ValidationException("The specified role is not valid.", new List<string> { "Role must be one of the predefined roles." });
+        //}
 
         var user = new IdentityUser { UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (!result.Succeeded)
         {
-            var identityErrors = result.Errors.Select(e => e.Description).ToList();
+            var identityErrors = result.Errors
+                .Select(e => new ValidationError(e.Description, ValidationErrorCodes.IdentityError))
+                .ToList();
+
             throw new ValidationException("One or more Identity validation errors occurred.", identityErrors);
         }
+
+        //if (!result.Succeeded)
+        //{
+        //    var identityErrors = result.Errors.Select(e => e.Description).ToList();
+        //    throw new ValidationException("One or more Identity validation errors occurred.", identityErrors);
+        //}
 
         var roleToAssign = requestedRole;
 

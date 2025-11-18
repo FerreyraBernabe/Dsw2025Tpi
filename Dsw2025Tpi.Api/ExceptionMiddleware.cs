@@ -30,8 +30,8 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Bad Request";
                     detail = ve.Message;
-                    errors = ve.Errors; // Extrae la lista de errores
-                    internalCode = 1001; // Codigo interno para errores de validación
+                    errors = ve.Errors.Select(e => new { e.Message, e.Code });
+                    internalCode = 1001;
                     break;
 
                 case EntityNotFoundException:

@@ -15,7 +15,7 @@ namespace Dsw2025Tpi.Application.Validation
     {
         public static void Validate(OrderModel.OrderRequest request)
         {
-            var errors = new List<string>();
+            var errors = new List<ValidationError>();
 
             if (request == null)
             {
@@ -24,33 +24,33 @@ namespace Dsw2025Tpi.Application.Validation
             else
             {
                 if (request.CustomerId == Guid.Empty)
-                   errors.Add("CustomerID is mandatory.");
+                    errors.Add(new ValidationError("CustomerID is mandatory.", ValidationErrorCodes.OrderCustomerId));
 
                 if (string.IsNullOrWhiteSpace(request.ShippingAddress))
-                   errors.Add("The Shipping Address is required.");
+                    errors.Add(new ValidationError("The Shipping Address is required.", ValidationErrorCodes.OrderShippingAddressEmpty));
                 else if (request.ShippingAddress.Equals("string", StringComparison.OrdinalIgnoreCase))
-                   errors.Add("Shipping Address cannot be 'string'.");
+                    errors.Add(new ValidationError("Shipping Address cannot be 'string'.", ValidationErrorCodes.OrderShippingAddressFormat));
                 else if (request.ShippingAddress.StartsWith(' ') || request.ShippingAddress.EndsWith(' '))
-                    errors.Add("The Shipping Address cannot begin or end with a blank space.");
+                    errors.Add(new ValidationError("The Shipping Address cannot begin or end with a blank space.", ValidationErrorCodes.OrderShippingAddressFormat));
 
                 if (request.ShippingAddress.Length > 256)
-                    errors.Add("The shipping address cannot exceed 256 characters.");
+                    errors.Add(new ValidationError("The shipping address cannot exceed 256 characters.", ValidationErrorCodes.OrderShippingAddressLength));
 
                 if (string.IsNullOrWhiteSpace(request.BillingAddress))
-                    errors.Add("The Billing Address is required.");
+                    errors.Add(new ValidationError("The Billing Address is required.", ValidationErrorCodes.OrderBillingAddressEmpty));
                 else if (request.BillingAddress.Equals("string", StringComparison.OrdinalIgnoreCase))
-                    errors.Add("BillingAdress cannot be 'string'.");
+                    errors.Add(new ValidationError("Billing Address cannot be 'string'.", ValidationErrorCodes.OrderBillingAddressFormat));
                 else if (request.BillingAddress.StartsWith(' ') || request.BillingAddress.EndsWith(' '))
-                    errors.Add("The Billing Address cannot begin or end with a blank space.");
+                    errors.Add(new ValidationError("The Billing Address cannot begin or end with a blank space.", ValidationErrorCodes.OrderBillingAddressFormat));
 
                 if (request.BillingAddress.Length > 256)
-                    errors.Add("The billing address cannot exceed 256 characters.");
+                    errors.Add(new ValidationError("The billing address cannot exceed 256 characters.", ValidationErrorCodes.OrderBillingAddressLength));
 
                 if (!(string.IsNullOrWhiteSpace(request.Notes)) && (request.Notes.Equals("string", StringComparison.OrdinalIgnoreCase)))
-                    errors.Add("Notes cannot be 'string'.");
+                    errors.Add(new ValidationError("Notes cannot be 'string'.", ValidationErrorCodes.OrderNotes));
 
                 if (request.OrderItems == null || request.OrderItems.Count == 0)
-                    errors.Add("Must include at least one item in the order.");
+                    errors.Add(new ValidationError("Must include at least one item in the order.", ValidationErrorCodes.OrderItems));
 
                 if (errors.Any())
                     throw new ValidationException("One or more validation errors occurred.", errors);
@@ -59,24 +59,4 @@ namespace Dsw2025Tpi.Application.Validation
 
         }
     }
-    //public static class OrderValidator
-    //{
-    //    public static void Validate(OrderModel.OrderRequest request)
-    //    {
-    //        if (request == null)
-    //            throw new InvalidOperationException("The order request body can not be null.");
-
-    //        if (request.CustomerId == Guid.Empty)
-    //            throw new InvalidOperationException("CustomerID is mandatory.");
-
-    //        if (string.IsNullOrWhiteSpace(request.ShippingAddress) || request.ShippingAddress.Length > 256)
-    //            throw new InvalidOperationException("The shipping address is required and cannot exceed 256 characters.");
-
-    //        if (string.IsNullOrWhiteSpace(request.BillingAddress) || request.BillingAddress.Length > 256)
-    //            throw new InvalidOperationException("The billing address is required and cannot exceed 256 characters.");
-
-    //        if (request.OrderItems == null || request.OrderItems.Count == 0)
-    //            throw new InvalidOperationException("Must include at least one item in the order.");
-    //    }
-    //}
 }
