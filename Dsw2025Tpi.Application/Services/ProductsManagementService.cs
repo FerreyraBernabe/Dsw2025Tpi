@@ -39,33 +39,58 @@ public class ProductsManagementService : IProductsManagementService
         );
     }
 
-    public async Task<ProductModel.GetProductResponse> GetAllProducts(ProductModel.GetProduct request)
+    public async Task<ProductModel.ResponsePagination> GetAllProducts(ProductModel.FilterProduct request)
     {
-        var products = await _repository.GetFiltered<Product>(p => p.IsActive);
+        var isActive = request.Status == "enabled"
+                ? (bool?)true
+                : request.Status == "disabled"
+                ? (bool?)false
+                : null;
+        var activeProducts = await _repository.GetFiltered<Product>(p => ((isActive == null || p.IsActive == isActive)
+        && string.IsNullOrEmpty(request.Search) || p.Name.Contains(request.Search)));
 
-        var orderedProducts = products?.OrderBy(p => p.Sku).ToList(); // Añadir ToList() para materializar la colección
+        if (activeProducts is null || !activeProducts.Any())
+                    throw new NoContentException("No products were found");
 
-        int page = request.Page ?? 1; // Usar valores por defecto
-        int pageSize = request.PageSize ?? 10;
+        var products = activeProducts.Select(p => new ProductModel.Response(
+        p.Id,
+        p.Sku,
+        p.InternalCode,
+        p.Name,
+        p.Description,
+        p.CurrentUnitPrice,
+        p.StockQuantity,
+        p.IsActive))
+        .OrderBy(p => p.Sku)
+        .Skip((request.PageNumber - 1) * request.PageSize ?? 0)
+        .Take(request.PageSize ?? activeProducts.Count());
 
-        var total = orderedProducts?.Count ?? 0; // Usar operador null-coalescing
+        return new ProductModel.ResponsePagination(products.ToList(), activeProducts.Count());
+        //var products = await _repository.GetFiltered<Product>(p => p.IsActive);
 
-        var pagedProducts = orderedProducts?
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize);
+        //var orderedProducts = products?.OrderBy(p => p.Sku).ToList(); // Añadir ToList() para materializar la colección
 
-        var items = pagedProducts?.Select(product => new ProductModel.Response(
-            product.Id,
-            product.Sku,
-            product.InternalCode,
-            product.Name,
-            product.Description,
-            product.CurrentUnitPrice,
-            product.StockQuantity,
-            product.IsActive
-        )).ToList();
+        //int page = request.Page ?? 1; // Usar valores por defecto
+        //int pageSize = request.PageSize ?? 10;
 
-        return new ProductModel.GetProductResponse(items, total, page, pageSize);
+        //var total = orderedProducts?.Count ?? 0; // Usar operador null-coalescing
+
+        //var pagedProducts = orderedProducts?
+        //    .Skip((page - 1) * pageSize)
+        //    .Take(pageSize);
+
+        //var items = pagedProducts?.Select(product => new ProductModel.Response(
+        //    product.Id,
+        //    product.Sku,
+        //    product.InternalCode,
+        //    product.Name,
+        //    product.Description,
+        //    product.CurrentUnitPrice,
+        //    product.StockQuantity,
+        //    product.IsActive
+        //)).ToList();
+
+        //return new ProductModel.ResponsePagination(items, total, page, pageSize);
     }
 
     public async Task<ProductModel.Response> AddProduct(ProductModel.Request request)

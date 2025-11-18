@@ -34,17 +34,32 @@ public class ProductsController : ControllerBase
 
     //punto 2
     [HttpGet()]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductModel.GetProduct request)
+    [Authorize(Roles = "Client")]
+    public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductModel.FilterProduct request)
     {
         var products = await _service.GetAllProducts(request);
         if (products == null) return NoContent();
         return Ok(products);
     }
 
-   
-    // punto 3
-    [HttpGet("{id:guid}", Name = "GetProductById")]
+    //Nuevo endpoint para segundoCuatrimestre
+    [HttpGet("admin")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAuthProducts([FromQuery] ProductModel.FilterProduct request)
+    {
+
+        var products = await _service.GetAllProducts(request);
+        if (products == null)
+        {
+            Response.Headers.Append("X-Message", "There are no active products");
+            return NoContent();
+        }
+
+        return Ok(products);
+    }
+
+        // punto 3
+        [HttpGet("{id:guid}", Name = "GetProductById")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetProductByIdAsync(Guid id)
     {

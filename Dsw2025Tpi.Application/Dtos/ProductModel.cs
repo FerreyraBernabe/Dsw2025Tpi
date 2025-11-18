@@ -12,7 +12,7 @@ namespace Dsw2025Tpi.Application.Dtos
      public record Response(Guid Id, string Sku, string InternalCode, string Name, 
          string Description, decimal CurrentUnitPrice, int StockQuantity, bool IsActive);
 
-     public record GetProduct(int? Page, int? PageSize);
-     public record GetProductResponse(IEnumerable<Response> Items, int TotalCount, int Page, int PageSize);
+     public record FilterProduct(string? Status, string? Search, int? PageNumber, int? PageSize);
+     public record ResponsePagination(List<Response> ProductItems, int Total);
     }
 }
