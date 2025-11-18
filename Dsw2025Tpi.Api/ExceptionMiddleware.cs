@@ -22,6 +22,7 @@ public class ExceptionMiddleware : IMiddleware
             object errors = null!;
             string title = "Internal Server Error";
             string detail = e.Message;
+            int internalCode = 1000;
 
             switch (e)
             {
@@ -30,33 +31,61 @@ public class ExceptionMiddleware : IMiddleware
                     title = "Bad Request";
                     detail = ve.Message;
                     errors = ve.Errors; // Extrae la lista de errores
+                    internalCode = 1001; // Codigo interno para errores de validación
                     break;
 
                 case EntityNotFoundException:
                     statusCode = HttpStatusCode.NotFound;
                     title = "Not Found";
+                    internalCode = 1002;
                     break;
+
                 case NoContentException:
                     statusCode = HttpStatusCode.NoContent;
                     title = "No Content";
+                    internalCode = 1003;
                     break;
+
                 case DuplicatedEntityException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    internalCode = 1004;
+                    break;
+
                 case BadRequestException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    internalCode = 1005;
+                    break;
+
                 case ApplicationException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    internalCode = 1006;
+                    break;
+
                 case ArgumentException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    title = "Bad Request";
+                    internalCode = 1007;
+                    break;
+
                 case InvalidOperationException:
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Bad Request";
+                    internalCode = 1008;
                     break;
+
                 case UnauthorizedException:
                     statusCode = HttpStatusCode.Unauthorized;
                     title = "Unauthorized";
+                    internalCode = 1009;
                     break;
             }
 
             var errorResponse = errors != null
-            ? (object)new { status = (int)statusCode, title = title, detail = detail, errors = errors }
-            : new { status = (int)statusCode, title = title, detail = detail };
+            ? (object)new { status = (int)statusCode, title = title, detail = detail, errors = errors, code = internalCode }
+            : new { status = (int)statusCode, title = title, detail = detail, code = internalCode };
 
             //var errorResponse = new
             //{
