@@ -1,4 +1,8 @@
 ﻿using Dsw2025Tpi.Application.Dtos;
+using Dsw2025Tpi.Application.Exceptions;
+using Dsw2025Tpi.Application.Interfaces;
+using Dsw2025Tpi.Application.Validations;
+using Dsw2025Tpi.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -10,10 +14,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Dsw2025Tpi.Application.Exceptions;
+using static Dsw2025Tpi.Application.Dtos.LoginModel;
 using ApplicationException=Dsw2025Tpi.Application.Exceptions.ApplicationException;
-using Dsw2025Tpi.Application.Validations;
-using Dsw2025Tpi.Application.Interfaces;
 
 namespace Dsw2025Tpi.Application.Services;
 
@@ -22,14 +24,18 @@ public class AuthenticateService : IAuthenticateService
     private readonly IConfiguration _config;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly ICustomerService _customerService;
 
-    public AuthenticateService(IConfiguration config,
+    public AuthenticateService(
+        IConfiguration config,
         SignInManager<IdentityUser> signInManager,
-        UserManager<IdentityUser> userManager)
+        UserManager<IdentityUser> userManager,
+        ICustomerService customerService)
     {
         _config = config;
         _userManager = userManager;
         _signInManager = signInManager;
+        _customerService = customerService;
     }
 
     public string GenerateToken(string username, string role)
@@ -76,8 +82,26 @@ public class AuthenticateService : IAuthenticateService
 
         var token = GenerateToken(request.Username, role);
 
-        return new LoginModel.ResponseLogin(token,role);
+        // Obtener CustomerId si es Client
+        Guid? customerId = null;
+
+        if (role.Equals("Client", StringComparison.OrdinalIgnoreCase))
+        {
+            var customer = await _customerService.GetByEmailAsync(user.Email!);
+            customerId = customer?.Id;
+        }
+
+        var userDto = new UserDto(
+            Id: user.Id,
+            Username: user.UserName!,
+            Email: user.Email!,
+            Role: role,
+            CustomerId: customerId
+        );
+
+        return new LoginModel.ResponseLogin(token, userDto);
     }
+
     public async Task<RegisterModel.ResponseRegister> Register(RegisterModel.RequestRegister model)
     {
         RegisterValidator.Validate(model);
@@ -112,11 +136,6 @@ public class AuthenticateService : IAuthenticateService
             throw new ValidationException("The specified role is not valid.", errors);
         }
 
-        //if (!allowedRoles.Contains(requestedRole))
-        //{
-        //    throw new ValidationException("The specified role is not valid.", new List<string> { "Role must be one of the predefined roles." });
-        //}
-
         var user = new IdentityUser { UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -129,12 +148,6 @@ public class AuthenticateService : IAuthenticateService
             throw new ValidationException("One or more Identity validation errors occurred.", identityErrors);
         }
 
-        //if (!result.Succeeded)
-        //{
-        //    var identityErrors = result.Errors.Select(e => e.Description).ToList();
-        //    throw new ValidationException("One or more Identity validation errors occurred.", identityErrors);
-        //}
-
         var roleToAssign = requestedRole;
 
         var roleResult = await _userManager.AddToRoleAsync(user, roleToAssign!);
@@ -143,6 +156,17 @@ public class AuthenticateService : IAuthenticateService
         {
             // En caso de que la asignación de rol falle.
             throw new ApplicationException("Could not assign user role.");
+        }
+
+        if (requestedRole.Equals("Client", StringComparison.OrdinalIgnoreCase))
+        {
+            var customerRequest = new CustomerModel.CustomerRequest(
+            Name: user.UserName!,
+            Email: user.Email!,
+            PhoneNumber: "Sin Especificar" // requerido
+        );
+
+            await _customerService.CreateCustomerAsync(customerRequest);
         }
 
         return new RegisterModel.ResponseRegister();

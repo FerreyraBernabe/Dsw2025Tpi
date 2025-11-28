@@ -11,7 +11,7 @@ namespace Dsw2025Tpi.Application.Validation
 {
     public static class CustomerValidator
     {
-        public static void Validate(CustomerModel.Request request)
+        public static void Validate(CustomerModel.CustomerRequest request)
         {
             var errors = new List<ValidationError>();
 

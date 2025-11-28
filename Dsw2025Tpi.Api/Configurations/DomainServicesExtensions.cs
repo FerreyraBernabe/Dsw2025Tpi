@@ -22,9 +22,11 @@ namespace Dsw2025Tpi.Api.Configurations
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<ProductsManagementService>();
             services.AddScoped<OrdersManagementService>();
+            services.AddScoped<CustomersService>();
             services.AddScoped<IProductsManagementService, ProductsManagementService>();
             services.AddScoped<IOrdersManagementService, OrdersManagementService>();
          //   services.AddScoped<IAuthenticateService, AuthenticateService>();
+            services.AddScoped<ICustomerService, CustomersService>();
 
             return services;
         }
