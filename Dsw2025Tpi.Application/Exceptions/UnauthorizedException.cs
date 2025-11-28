@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class UnauthorizedException : Exception
+    public class UnauthorizedException : ApplicationException
     {
-        public UnauthorizedException(string message) : base(message)
-        {
+        public int Code { get; }
 
+        public UnauthorizedException(string message, int code) : base(message)
+        {
+            Code = code;
         }
     }
 }

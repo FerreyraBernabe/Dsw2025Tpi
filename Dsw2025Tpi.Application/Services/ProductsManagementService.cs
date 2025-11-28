@@ -24,7 +24,7 @@ public class ProductsManagementService : IProductsManagementService
     {
        
         var product = await _repository.GetById<Product>(id)
-                      ?? throw new EntityNotFoundException("Product not found.");
+                      ?? throw new EntityNotFoundException("Product not found.", ExceptionErrorCodes.ProductNotFound);
 
 
         return new ProductModel.Response(
@@ -50,7 +50,7 @@ public class ProductsManagementService : IProductsManagementService
         && string.IsNullOrEmpty(request.Search) || p.Name.Contains(request.Search)));
 
         if (activeProducts is null || !activeProducts.Any())
-                    throw new NoContentException("No products were found");
+                    throw new NoContentException("No products were found", ExceptionErrorCodes.NoProducts);
 
         var products = activeProducts.Select(p => new ProductModel.Response(
         p.Id,
@@ -66,31 +66,6 @@ public class ProductsManagementService : IProductsManagementService
         .Take(request.PageSize ?? activeProducts.Count());
 
         return new ProductModel.ResponsePagination(products.ToList(), activeProducts.Count());
-        //var products = await _repository.GetFiltered<Product>(p => p.IsActive);
-
-        //var orderedProducts = products?.OrderBy(p => p.Sku).ToList(); // Añadir ToList() para materializar la colección
-
-        //int page = request.Page ?? 1; // Usar valores por defecto
-        //int pageSize = request.PageSize ?? 10;
-
-        //var total = orderedProducts?.Count ?? 0; // Usar operador null-coalescing
-
-        //var pagedProducts = orderedProducts?
-        //    .Skip((page - 1) * pageSize)
-        //    .Take(pageSize);
-
-        //var items = pagedProducts?.Select(product => new ProductModel.Response(
-        //    product.Id,
-        //    product.Sku,
-        //    product.InternalCode,
-        //    product.Name,
-        //    product.Description,
-        //    product.CurrentUnitPrice,
-        //    product.StockQuantity,
-        //    product.IsActive
-        //)).ToList();
-
-        //return new ProductModel.ResponsePagination(items, total, page, pageSize);
     }
 
     public async Task<ProductModel.Response> AddProduct(ProductModel.Request request)
@@ -101,11 +76,11 @@ public class ProductsManagementService : IProductsManagementService
         var existInternalCode = await _repository.First<Product>(p => p.InternalCode == request.InternalCode);
 
         if (existSku != null) {
-            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
+            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}", ExceptionErrorCodes.DuplicateUSKU);
         }
 
         if (existInternalCode != null)  {
-            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
+            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}", ExceptionErrorCodes.DuplicateInternalCode);
         }
 
         var product = new Product(
@@ -136,19 +111,19 @@ public class ProductsManagementService : IProductsManagementService
         ProductValidator.Validate(request);
 
         var product = await _repository.GetById<Product>(id) 
-            ?? throw new EntityNotFoundException("Product not found.");
+            ?? throw new EntityNotFoundException("Product not found.", ExceptionErrorCodes.ProductNotFound);
 
         var existSku = await _repository.First<Product>(p => p.Sku == request.Sku);
         var existInternalCode = await _repository.First<Product>(p => p.InternalCode == request.InternalCode);
 
         if (existSku != null && !(existSku.Id == id))
         {
-            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}");
+            throw new DuplicatedEntityException($"A product with the same SKU already exists: {request.Sku}", ExceptionErrorCodes.DuplicateUSKU);
         }
 
         if (existInternalCode != null && !(existInternalCode.Id == id))
         {
-            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}");
+            throw new DuplicatedEntityException($"A product with the same Internal Code already exists: {request.InternalCode}", ExceptionErrorCodes.DuplicateInternalCode);
         }
 
         product.Sku = request.Sku;
@@ -176,7 +151,7 @@ public class ProductsManagementService : IProductsManagementService
     {
 
        var product = await _repository.GetById<Product>(id)
-                      ?? throw new EntityNotFoundException("Product not found.");
+                      ?? throw new EntityNotFoundException("Product not found.", ExceptionErrorCodes.ProductNotFound);
 
        product.IsActive = false;
        var updated = await _repository.Update(product);

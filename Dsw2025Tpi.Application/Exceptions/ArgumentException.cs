@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class DuplicatedEntityException : ApplicationException
+    public class ArgumentException : ApplicationException
     {
         public int Code { get; }
 
-        public DuplicatedEntityException(string message, int code) : base(message)
+        public ArgumentException(string message, int code) : base(message)
         {
             Code = code;
         }
     }
-
 }

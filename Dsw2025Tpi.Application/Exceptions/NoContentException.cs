@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions;
 
-public class NoContentException : Exception
-{
-    public NoContentException(string message) : base(message)
+
+    public class NoContentException : ApplicationException
     {
+        public int Code { get; }
+
+        public NoContentException(string message, int code) : base(message)
+        {
+            Code = code;
+        }
     }
 
-}

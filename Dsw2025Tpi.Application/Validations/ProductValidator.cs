@@ -2,6 +2,7 @@
 using Dsw2025Tpi.Application.Exceptions;
 using System;
 using System.Text.RegularExpressions;
+using InvalidOperationException = Dsw2025Tpi.Application.Exceptions.InvalidOperationException;
 using ValidationException = Dsw2025Tpi.Application.Exceptions.ValidationException;
 
 namespace Dsw2025Tpi.Application.Validation
@@ -15,7 +16,7 @@ namespace Dsw2025Tpi.Application.Validation
 
             if (request == null)
                 {
-                    throw new InvalidOperationException("The product request body cannot be null.");
+                    throw new InvalidOperationException("The product request body cannot be null.", ExceptionErrorCodes.BodyNotNull);
                 }
                 else
                 {

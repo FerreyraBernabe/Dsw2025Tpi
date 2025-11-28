@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using InvalidOperationException = Dsw2025Tpi.Application.Exceptions.InvalidOperationException;
 using ValidationException = Dsw2025Tpi.Application.Exceptions.ValidationException;
 
 namespace Dsw2025Tpi.Application.Validations
@@ -18,7 +19,7 @@ namespace Dsw2025Tpi.Application.Validations
 
             if (model == null)
             {
-                throw new InvalidOperationException("The register request body cannot be null.");
+                throw new InvalidOperationException("The register request body cannot be null.", ExceptionErrorCodes.BodyNotNull);
             }
             else
             {

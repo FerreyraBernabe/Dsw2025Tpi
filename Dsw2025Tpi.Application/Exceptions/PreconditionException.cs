@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class DuplicatedEntityException : ApplicationException
+    public class PreconditionException : ApplicationException
     {
         public int Code { get; }
 
-        public DuplicatedEntityException(string message, int code) : base(message)
+        public PreconditionException(string message, int code) : base(message)
         {
             Code = code;
         }
     }
-
 }

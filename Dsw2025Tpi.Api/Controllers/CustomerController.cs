@@ -27,7 +27,7 @@ namespace Dsw2025Tpi.Api.Controllers
         public async Task<IActionResult> GetMyCustomerByEmail([FromBody] string email)
         {
             if (string.IsNullOrWhiteSpace(email))
-                throw new BadRequestException("Email is required");
+                throw new BadRequestException("Email is required", ExceptionErrorCodes.EmailRequired);
 
             var customer = await _service.GetByEmailAsync(email);
 

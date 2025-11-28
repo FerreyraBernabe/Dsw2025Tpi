@@ -68,17 +68,17 @@ public class AuthenticateService : IAuthenticateService
         var user = await _userManager.FindByNameAsync(request.Username);
         if (user == null)
         {
-            throw new UnauthorizedException("Incorrect username or password.");
+            throw new UnauthorizedException("Incorrect username or password.", ExceptionErrorCodes.InvalidUserPassword);
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
         {
-            throw new UnauthorizedException("Incorrect username or password.");
+            throw new UnauthorizedException("Incorrect username or password.", ExceptionErrorCodes.InvalidUserPassword);
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var role = roles.FirstOrDefault() ?? throw new ApplicationException("User has not assigned role");
+        var role = roles.FirstOrDefault() ?? throw new ApplicationException("User has not assigned role", ExceptionErrorCodes.UserHasNotAssignedRole);
 
         var token = GenerateToken(request.Username, role);
 
@@ -109,14 +109,14 @@ public class AuthenticateService : IAuthenticateService
         var existingUser = await _userManager.FindByNameAsync(model.Username);
         if (existingUser != null)
         {
-            throw new DuplicatedEntityException("A user with this username or email already exists.");
+            throw new DuplicatedEntityException("A user with this username or email already exists.", ExceptionErrorCodes.DuplicateUserEmail);
         }
 
         // Si el usuario no existe, verificamos el email.
         existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
         {
-            throw new DuplicatedEntityException("A user with this username or email already exists.");
+            throw new DuplicatedEntityException("A user with this username or email already exists.", ExceptionErrorCodes.DuplicateUserEmail);
         }
 
         // FIX: Usar GetChildren para obtener la lista de roles
@@ -155,7 +155,7 @@ public class AuthenticateService : IAuthenticateService
         if (!roleResult.Succeeded)
         {
             // En caso de que la asignación de rol falle.
-            throw new ApplicationException("Could not assign user role.");
+            throw new ApplicationException("Could not assign user role.", ExceptionErrorCodes.CouldntAssignedUser);
         }
 
         if (requestedRole.Equals("Client", StringComparison.OrdinalIgnoreCase))

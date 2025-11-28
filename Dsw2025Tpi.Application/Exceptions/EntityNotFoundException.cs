@@ -8,8 +8,12 @@ namespace Dsw2025Tpi.Application.Exceptions
 {
     public class EntityNotFoundException : ApplicationException
     {
-        public EntityNotFoundException(string message) : base(message)
+        public int Code { get; }
+
+        public EntityNotFoundException(string message, int code) : base(message)
         {
+            Code = code;
         }
     }
+
 }

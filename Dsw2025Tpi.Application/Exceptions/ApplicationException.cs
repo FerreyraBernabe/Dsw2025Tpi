@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Tpi.Application.Exceptions
 {
-    public class ApplicationException(string message) : Exception(message)
+    public class ApplicationException : Exception
     {
+        public int Code { get; }
+
+        public ApplicationException(string message, int code = 0) : base(message)
+        {
+            Code = code;
+        }
     }
 }

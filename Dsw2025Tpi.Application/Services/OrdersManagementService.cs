@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using InvalidOperationException = Dsw2025Tpi.Application.Exceptions.InvalidOperationException;
 
 namespace Dsw2025Tpi.Application.Services
 {
@@ -27,7 +28,7 @@ namespace Dsw2025Tpi.Application.Services
             OrderValidator.Validate(request);
 
             var customer = await _repository.GetById<Customer>(request.CustomerId)
-                    ?? throw new EntityNotFoundException($"Customer not found: {request.CustomerId}");
+                    ?? throw new PreconditionException($"Customer not found: {request.CustomerId}", ExceptionErrorCodes.InvalidCustomer);
 
             var orderItems = new List<OrderItem>();
             decimal totalAmount = 0;
@@ -41,15 +42,15 @@ namespace Dsw2025Tpi.Application.Services
             // Descontar stock y armar los ítems
             foreach (var item in request.OrderItems)
             {
-                
+
                 var product = await _repository.GetById<Product>(item.ProductId)
-                    ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}");
-                
-                if(!product.IsActive)
-                    throw new EntityNotFoundException($"The following product is not available: {product.Id}");
+                    ?? throw new EntityNotFoundException($"Product not found: {item.ProductId}", ExceptionErrorCodes.ProductNotFound);
+
+                if (!product.IsActive)
+                    throw new EntityNotFoundException($"The following product is not available: {product.Id}", ExceptionErrorCodes.ProductNotFound);
 
                 if (product.StockQuantity < item.Quantity)
-                    throw new InvalidOperationException($"Insufficient stock for the product: {product.Id}");
+                    throw new InvalidOperationException($"Insufficient stock for the product: {product.Id}", ExceptionErrorCodes.InsufficientStock);
 
                 product.StockQuantity -= item.Quantity;
 
@@ -112,7 +113,7 @@ namespace Dsw2025Tpi.Application.Services
         {
 
             var order = await _repository.GetById<Order>(id, nameof(Order.OrderItems), "OrderItems.Product");
-            if (order == null) throw new EntityNotFoundException($"Order not found: {id}");
+            if (order == null) throw new EntityNotFoundException($"Order not found: {id}", ExceptionErrorCodes.OrderNotFound);
 
             var responseItems = order.OrderItems.Select(oi => new OrderItemModel.Response(
                 oi.Id,
@@ -147,14 +148,14 @@ namespace Dsw2025Tpi.Application.Services
             {
                 // Verificar si el cliente existe
                 var customer = await _repository.GetById<Customer>((Guid)request.CustomerId)
-                   ?? throw new EntityNotFoundException($"Customer not found: {request.CustomerId}");
+                   ?? throw new EntityNotFoundException($"Customer not found: {request.CustomerId}", ExceptionErrorCodes.CustomerNotFound);
 
                 orders = orders.Where(o => o.CustomerId == request.CustomerId.Value).ToList();
             }
 
             if (!string.IsNullOrEmpty(request.Status))  {
                 if (!Enum.TryParse<OrderStatus>(request.Status, true, out var newStatus)) {
-                    throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
+                    throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED", ExceptionErrorCodes.CannotChangeOrderStatus);
                 }
                 orders = orders.Where(o => o.Status.ToString().Equals(request.Status, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -200,14 +201,14 @@ namespace Dsw2025Tpi.Application.Services
         public async Task<OrderModel.Response> UpdateOrderStatus(Guid id, string status)
         {
             var order = await _repository.GetById<Order>(id, nameof(Order.OrderItems), "OrderItems.Product")
-             ?? throw new EntityNotFoundException($"Order not found: {id}");
+             ?? throw new EntityNotFoundException($"Order not found: {id}", ExceptionErrorCodes.OrderNotFound);
 
             // Validar y actualizar el estado
             if (string.IsNullOrWhiteSpace(status))
-                throw new BadRequestException("You must specify a valid status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
+                throw new BadRequestException("You must specify a valid status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED", ExceptionErrorCodes.InvalidStatus);
 
             if (!Enum.TryParse<OrderStatus>(status, true, out var newStatus))
-                throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED");
+                throw new InvalidOperationException("Invalid Status. Allowed status: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED", ExceptionErrorCodes.CannotChangeOrderStatus);
 
             order.Status = newStatus;
             var updated = await _repository.Update(order);

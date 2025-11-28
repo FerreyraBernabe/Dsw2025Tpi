@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InvalidOperationException = Dsw2025Tpi.Application.Exceptions.InvalidOperationException;
 using ValidationException = Dsw2025Tpi.Application.Exceptions.ValidationException;
 
 namespace Dsw2025Tpi.Application.Validation
@@ -19,7 +20,7 @@ namespace Dsw2025Tpi.Application.Validation
 
             if (request == null)
             {
-               throw new InvalidOperationException("The order request body can not be null.");
+               throw new InvalidOperationException("The order request body can not be null.", ExceptionErrorCodes.BodyNotNull);
             }
             else
             {
