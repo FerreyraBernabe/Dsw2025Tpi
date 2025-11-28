@@ -34,7 +34,7 @@ public class ProductsController : ControllerBase
 
     //punto 2
     [HttpGet()]
-    [Authorize(Roles = "Client")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllProductsAsync([FromQuery] ProductModel.FilterProduct request)
     {
         var products = await _service.GetAllProducts(request);

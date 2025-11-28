@@ -159,9 +159,10 @@ public class Program
         {
             options.AddPolicy("AllowAll", policy =>
             {//allow all se cambia por el localhost del front para el desarrollo
-                policy.AllowAnyOrigin()
+                policy.WithOrigins("http://localhost:5173")
                       .AllowAnyHeader()
-                      .AllowAnyMethod();
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
 
