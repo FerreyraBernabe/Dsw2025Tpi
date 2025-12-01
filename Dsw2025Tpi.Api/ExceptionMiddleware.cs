@@ -40,6 +40,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.NotFound;
                     title = "Entity Not Found";
                     detail = enEx.Message;
+                    errors = new[] { new { Message = enEx.Message, Code = enEx.Code } };
                     internalCode = 1002;
                     break;
 
@@ -47,6 +48,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.NoContent;
                     title = "No Content"; 
                     detail = nocEx.Message;
+                    errors = new[] { new { Message = nocEx.Message, Code = nocEx.Code } };
                     internalCode = 1003;
                     break;
 
@@ -54,6 +56,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Entity Already Exists";
                     detail = duplicatedEx.Message;
+                    errors = new[] { new { Message = duplicatedEx.Message, Code = duplicatedEx.Code } };
                     internalCode = 1004;
                     break;
 
@@ -61,6 +64,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Bad Request";
                     detail = badRequestEx.Message;
+                    errors = new[] { new { Message = badRequestEx.Message, Code = badRequestEx.Code } };
                     internalCode = 1005;
                     break;
 
@@ -68,6 +72,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Invalid Argument";
                     detail = argEx.Message;
+                    errors = new[] { new { Message = argEx.Message, Code = argEx.Code } };
                     internalCode = 1006;
                     break;
 
@@ -75,6 +80,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Invalid Operation";
                     detail = inEx.Message;
+                    errors = new[] { new { Message = inEx.Message, Code = inEx.Code } };
                     internalCode = 1007;
                     break;
 
@@ -82,6 +88,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.Unauthorized;
                     title = "Unauthorized Access";
                     detail = unEx.Message;
+                    errors = new[] { new { Message = unEx.Message, Code = unEx.Code } };
                     internalCode = 1008;
                     break;
 
@@ -89,6 +96,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.PreconditionFailed;
                     title = "Precondition Failed";
                     detail = prEx.Message;
+                    errors = new[] { new { Message = prEx.Message, Code = prEx.Code } };
                     internalCode = 1009;
                     break;
 
@@ -96,6 +104,7 @@ public class ExceptionMiddleware : IMiddleware
                     statusCode = HttpStatusCode.BadRequest;
                     title = "Application Error";
                     detail = appEx.Message;
+                    errors = new[] { new { Message = appEx.Message, Code = appEx.Code } };
                     internalCode = 1010;
                     break;
             }
